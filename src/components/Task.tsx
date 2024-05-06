@@ -1,34 +1,44 @@
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
 import { getProfilePic } from '../common/Utils'
+import { API_HOST } from '@/config'
+import { useDebounce } from '@uidotdev/usehooks'
+import { Calendar } from '@/components/ui/calendar'
+import { Button } from '@/components/ui/button'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
+import { cn } from '@/@/lib/utils'
+import { format, isValid } from 'date-fns'
+const DEBOUNCE_TIME = 500
 
-export const Task: React.FC<types.Task> = ({
-  id,
-  title,
-  description,
-  finishDate,
-  onDeleteTask,
-  users
-}) => {
+export const Task: React.FC<types.Task> = ({ id, title, description, finishDate, onDeleteTask, users, columnId }) => {
   const [Title, setTitle] = useState(title)
+  const [Description, setDescription] = useState(description)
+  const [FinishDate, setFinishDate] = useState(finishDate)
+  const [imagesUrl, setImagesUrl] = useState<types.ImageUrls>({})
+
+  const debouncedTitle = useDebounce(Title, DEBOUNCE_TIME)
+  const debouncedDescription = useDebounce(Description, DEBOUNCE_TIME)
+  const debouncedFinishDate = useDebounce(FinishDate, DEBOUNCE_TIME)
   const handleDelete = (): void => {
     fetch(
-      `http://localhost:8080/task/${id}`,
+      `${API_HOST}/task/${id}`,
       {
         method: 'DELETE'
       }
     ).then((response) => {
       console.log(response)
-      if (response.ok) {
+      if (response.ok && onDeleteTask !== undefined) {
         onDeleteTask(id)
       }
     }).catch((error) => { throw error })
   }
 
-  const [imagesUrl, setImagesUrl] = useState({})
-
   useEffect(() => {
-    const fetchProfilePics = async () => {
+    const fetchProfilePics = async (): Promise<void> => {
       const imageUrlMap: types.ImageUrls = {}
 
       // Esperar a que todas las promesas se completen y almacenar las URLs de las imágenes
@@ -47,10 +57,37 @@ export const Task: React.FC<types.Task> = ({
       setImagesUrl(imageUrlMap)
     }
 
-    if (users) {
-      fetchProfilePics()
-    }
+    void fetchProfilePics()
   }, [users]) // Se ejecutará cada vez que users cambie
+
+  useEffect(() => {
+    const updateTask = () => {
+      const newTask = {
+        title: debouncedTitle !== '' ? debouncedTitle : title,
+        description: debouncedDescription !== '' ? debouncedDescription : description,
+        finishDate: debouncedFinishDate !== undefined ? debouncedFinishDate : finishDate,
+        columnId
+      }
+
+      fetch(`${API_HOST}/task/${id} `, {
+        method: 'PUT',
+        credentials: 'include',
+        body: JSON.stringify(newTask),
+        headers: { 'Content-Type': 'application/json' }
+      }).then((response) => {
+        console.log(response)
+      }).catch((error) => { throw error })
+    }
+
+    // Llama a la función de actualización cuando cualquiera de las propiedades cambie
+    if (
+      (debouncedTitle !== '' && debouncedTitle !== title) ||
+      (debouncedDescription !== '' && debouncedDescription !== description) ||
+      (debouncedFinishDate !== undefined && debouncedFinishDate !== finishDate)
+    ) {
+      updateTask()
+    }
+  }, [debouncedTitle, debouncedDescription, debouncedFinishDate])
 
   return (
     <div className='bg-[#292b31] p-4 mb-3 rounded-xl mx-2' id={id.toString()}>
@@ -88,12 +125,19 @@ export const Task: React.FC<types.Task> = ({
             </svg>
           </button>
         </div>
-        <p>{description}</p>
+        <textarea
+          className='font-bold text-pretty bg-[#292b31]'
+          onChange={(e) => setDescription(e.target.value)}
+          defaultValue={description}
+        />
+
       </div>
       <div className='flex justify-between pt-4'>
         <div className='mt-2'>
           <p className='text-[rgba(255,255,255,0.7)] bg-[rgba(54,55,60,255)] rounded-full py-2 px-4 text-[14px] align-middle'>
-            {new Date(finishDate).toDateString()}
+            {
+              (finishDate !== null) ? new Date(finishDate).toDateString() : 'Undefined'
+            }
           </p>
         </div>
         <div className='flex'>
@@ -126,6 +170,32 @@ export const Task: React.FC<types.Task> = ({
           </button>
 
         </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant='outline'
+              className={cn(
+                'w-[280px] justify-start text-left font-normal',
+                FinishDate === undefined && 'text-muted-foreground'
+              )}
+            >
+
+              {isValid(FinishDate) ? format(FinishDate, 'PPP') : <span>Pick a date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-auto p-0'>
+            <Calendar
+              mode='single'
+              selected={FinishDate}
+              onSelect={(date) => {
+                if (date instanceof Date && !isNaN(date.getTime())) { // Verifica si date es una instancia de Date válida
+                  setFinishDate(date) // Establece la fecha seleccionada
+                }
+              }}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
 
       </div>
     </div>

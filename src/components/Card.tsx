@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Task } from './Task'
 import * as types from '../common/types'
-
+import { API_HOST } from '@/config'
 export const Card: React.FC<types.Card> = ({
   id,
   title,
@@ -33,8 +33,7 @@ export const Card: React.FC<types.Card> = ({
       columnId: id
     }
 
-    fetch(
-      'http://localhost:8080/task',
+    fetch(`${API_HOST}/task`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,6 +44,7 @@ export const Card: React.FC<types.Card> = ({
       const data = await response.text()
       newTask.id = +data
       if (datosTarjeta != null) {
+        console.log('nueva tarea creada')
         setDatosTarjetas([...datosTarjeta, newTask])
         return
       }
@@ -52,7 +52,7 @@ export const Card: React.FC<types.Card> = ({
     })
       .catch((error) => { throw error })
 
-    setDatosTarjetas([newTask])
+    // setDatosTarjetas([newTask])
   }
 
   return (
@@ -96,6 +96,7 @@ export const Card: React.FC<types.Card> = ({
             finishDate={datos.finishDate}
             onDeleteTask={handleDeleteTask}
             users={datos.users}
+            columnId={datos.columnId}
           />
         ))
         : ''}

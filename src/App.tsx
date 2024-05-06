@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
+import { API_HOST } from './config'
+import * as types from '../src/common/types'
 
 function App (): JSX.Element {
   const [isLogged, setIsLogged] = useState(false)
-  const [user, setUser] = useState({ name: '', id: 0 })
+  const [user, setUser] = useState<types.User>({ name: '', id: 0 })
 
   const handleLogin = (): void => {
     setIsLogged(!isLogged)
@@ -12,7 +14,7 @@ function App (): JSX.Element {
 
   useEffect(() => {
     const IsAuthenticated = (): void => {
-      fetch('http://localhost:8080/isAuthenticated', {
+      fetch(`${API_HOST}/isAuthenticated`, {
         method: 'GET',
         headers: {},
         credentials: 'include'

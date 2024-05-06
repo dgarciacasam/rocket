@@ -6,7 +6,7 @@ export interface Task {
   description: string
   finishDate: Date
   users: User[]
-  onDeleteTask: (id: number) => void
+  onDeleteTask?: (id: number) => void
   columnId: number
 }
 
@@ -17,7 +17,7 @@ export interface Card {
 }
 
 export interface User {
-  email: string
+  email?: string
   id: number
   name: string
 }

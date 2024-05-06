@@ -4,6 +4,7 @@ import styles from '../css/Content.module.css'
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
 import { getProfilePic } from '../common/Utils'
+import { API_HOST } from '@/config'
 
 export interface Props {
   user: types.User
@@ -15,7 +16,7 @@ export const Content: React.FC<Props> = ({ user }) => {
 
   const getColumns = (): void => {
     fetch(
-      `http://localhost:8080/column/${user.id}`,
+      `${API_HOST}/column/${user.id}`,
       {
         method: 'GET'
       }
@@ -47,7 +48,7 @@ export const Content: React.FC<Props> = ({ user }) => {
         }
       }
 
-      fetchProfilePic()
+      void fetchProfilePic()
     }
   }, [user])
 

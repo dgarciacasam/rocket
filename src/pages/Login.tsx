@@ -1,5 +1,5 @@
 import { KeyboardEvent, useState } from 'react'
-
+import { API_HOST } from '@/config'
 interface loginProps {
   onLogin: () => void
 
@@ -24,7 +24,7 @@ export const Login = (props: loginProps): any => {
         name: username,
         password
       }
-      await fetch('http://localhost:8080/login', {
+      await fetch(`${API_HOST}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(usuario),
@@ -49,7 +49,7 @@ export const Login = (props: loginProps): any => {
         name: username,
         password
       }
-      await fetch('http://localhost:8080/user', {
+      await fetch(`${API_HOST}/user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(usuario),
@@ -78,91 +78,91 @@ export const Login = (props: loginProps): any => {
 
         ? <div>
           <h1>SPINNERQWEOFWQUUOHQWOUHOEUHFQUFOQ</h1>
-          </div>
+        </div>
         : (isRegistering)
-            ? <div className='flex flex-col bg-[#111215] rounded-xl w-96 p-8'>
-              <h1 className='text-2xl font-semibold mb-4'>Register</h1>
-              <span className='mb-1'>EMAIL:</span>
-              <input
-                className='mb-4 text-black rounded-l p-1'
-                type='text'
-                name='email'
-                placeholder='Email'
-                value={email}
-                onChange={(ev) => setEmail(ev.target.value)}
-              />
+          ? <div className='flex flex-col bg-[#111215] rounded-xl w-96 p-8'>
+            <h1 className='text-2xl font-semibold mb-4'>Register</h1>
+            <span className='mb-1'>EMAIL:</span>
+            <input
+              className='mb-4 text-black rounded-l p-1'
+              type='text'
+              name='email'
+              placeholder='Email'
+              value={email}
+              onChange={(ev) => setEmail(ev.target.value)}
+            />
 
-              <span className='mb-1'>USERNAME:</span>
+            <span className='mb-1'>USERNAME:</span>
 
-              <input
-                className='mb-4 text-black rounded-l p-1'
-                type='text'
-                name='username'
-                placeholder='Username'
-                value={username}
-                onChange={(ev) => setUsername(ev.target.value)}
-              />
-              <span className='mb-1'>PASSWORD:</span>
-              <input
-                className='mb-4 text-black rounded-l p-1'
-                type='password'
-                name='password'
-                onKeyDown={function (event: KeyboardEvent) { if (event.key === 'Enter') register() }}
-                placeholder='Password'
-                value={password}
-                onChange={(ev) => setPassword(ev.target.value)}
-              />
+            <input
+              className='mb-4 text-black rounded-l p-1'
+              type='text'
+              name='username'
+              placeholder='Username'
+              value={username}
+              onChange={(ev) => setUsername(ev.target.value)}
+            />
+            <span className='mb-1'>PASSWORD:</span>
+            <input
+              className='mb-4 text-black rounded-l p-1'
+              type='password'
+              name='password'
+              onKeyDown={function (event: KeyboardEvent) { if (event.key === 'Enter') register() }}
+              placeholder='Password'
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+            />
 
-              <button
-                className='flex align-center border-white bg-black rounded-full mb-2'
-                onClick={register}
-              >
-                Register
-              </button>
-              <p
-                className='flex align-center mb-4'
-              >
-                Ya tienes una cuenta?<a className='ml-2 underline cursor-pointer ' onClick={handleLoginMode}> Login Here</a>
-              </p>
+            <button
+              className='flex align-center border-white bg-black rounded-full mb-2'
+              onClick={register}
+            >
+              Register
+            </button>
+            <p
+              className='flex align-center mb-4'
+            >
+              Ya tienes una cuenta?<a className='ml-2 underline cursor-pointer ' onClick={handleLoginMode}> Login Here</a>
+            </p>
 
-              </div>
-            : <div className='flex flex-col bg-[#111215] rounded-xl w-96 p-8'>
-              <h1 className='text-2xl font-semibold mb-4'>Login</h1>
-              <span className='mb-1'>USERNAME:</span>
+          </div>
+          : <div className='flex flex-col bg-[#111215] rounded-xl w-96 p-8'>
+            <h1 className='text-2xl font-semibold mb-4'>Login</h1>
+            <span className='mb-1'>USERNAME:</span>
 
-              <input
-                className='mb-4 text-black rounded-l p-1'
-                type='text'
-                name='username'
-                placeholder='Username'
-                value={username}
-                onChange={(ev) => setUsername(ev.target.value)}
-              />
-              <span className='mb-1'>PASSWORD:</span>
-              <input
-                className='mb-4 text-black rounded-l p-1'
-                type='password'
-                name='password'
-                onKeyDown={function (event: KeyboardEvent) { if (event.key === 'Enter') login() }}
-                placeholder='Password'
-                value={password}
-                onChange={(ev) => setPassword(ev.target.value)}
-              />
+            <input
+              className='mb-4 text-black rounded-l p-1'
+              type='text'
+              name='username'
+              placeholder='Username'
+              value={username}
+              onChange={(ev) => setUsername(ev.target.value)}
+            />
+            <span className='mb-1'>PASSWORD:</span>
+            <input
+              className='mb-4 text-black rounded-l p-1'
+              type='password'
+              name='password'
+              onKeyDown={function (event: KeyboardEvent) { if (event.key === 'Enter') login() }}
+              placeholder='Password'
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+            />
 
-              <button
-                className='flex align-center border-white bg-black rounded-full mb-2'
-                onClick={login}
-              >
-                Log in
-              </button>
+            <button
+              className='flex align-center border-white bg-black rounded-full mb-2'
+              onClick={login}
+            >
+              Log in
+            </button>
 
-              <p
-                className='flex align-center mb-4'
-              >
-                Don't have an account?<a className='ml-2 underline cursor-pointer ' onClick={handleLoginMode}> Register Here</a>
-              </p>
+            <p
+              className='flex align-center mb-4'
+            >
+              Don't have an account?<a className='ml-2 underline cursor-pointer ' onClick={handleLoginMode}> Register Here</a>
+            </p>
 
-            </div>}
+          </div>}
 
     </div>
   )

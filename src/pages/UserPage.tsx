@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getProfilePic } from '../common/Utils'
+// import * as types from '../common/types'
+import { Avatar, AvatarFallback, AvatarImage } from '@/@/components/ui/avatar'
 import * as types from '../common/types'
-
 export interface Props {
   user: types.User
 }
@@ -19,7 +20,7 @@ export const UserPage: React.FC<Props> = ({ user }) => {
       }).catch((error) => { throw error })
   }, [user])
 
-  const saveUser = async () => {
+  const saveUser = async (): Promise<void> => {
     const usuario = {
       id: user.id,
       email,
@@ -45,7 +46,11 @@ export const UserPage: React.FC<Props> = ({ user }) => {
   return (
     <div className='flex flex-col'>
       <h1 className='text-6xl mb-2'>{user.name}</h1>
-      <img src={imageUrl} alt='' className='size-32' />
+      <Avatar className='size-48'>
+        <AvatarImage src={imageUrl} />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+
       <h1 className='text-xl mt-4'>Modificar nombre de usuario</h1>
       <input type='text' placeholder='Nuevo nombre' className='p-1 mb-4 w-48 text-black' onChange={(ev) => setName(ev.target.value)} />
       <h1 className='text-xl'>Modificar contraseña</h1>

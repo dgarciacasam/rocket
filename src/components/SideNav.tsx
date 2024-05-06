@@ -1,3 +1,4 @@
+import { API_HOST } from '@/config'
 import { SideNavButton } from './SideNavButton'
 
 interface SideNavProps {
@@ -6,7 +7,7 @@ interface SideNavProps {
 
 export const SideNav: React.FC<SideNavProps> = ({ onLogout }) => {
   function logout (): void {
-    fetch('http://localhost:8080/logout', {
+    fetch(`${API_HOST}/logout`, {
       method: 'GET',
       headers: {},
       credentials: 'include'
