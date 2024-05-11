@@ -20,7 +20,7 @@ export interface User {
   email?: string
   id: number
   name: string
-  image: Blob
+  image: string
 }
 
 export interface Column {

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
-import { getProfilePic } from '../common/Services'
 import { API_HOST } from '@/config'
 import { useDebounce } from '@uidotdev/usehooks'
 import { Calendar } from '@/@/components/ui/calendar'
@@ -12,6 +11,7 @@ import {
 } from '@/@/components/ui/popover'
 import { cn } from '@/@/lib/utils'
 import { format, isValid } from 'date-fns'
+import { convertProfilePic } from '@/common/Services'
 const DEBOUNCE_TIME = 500
 
 export const Task: React.FC<types.Task> = ({ id, title, description, finishDate, onDeleteTask, users, columnId }) => {
@@ -45,7 +45,7 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
       await Promise.all(
         users.map(async (user) => {
           try {
-            const url = await getProfilePic(user.id)
+            const url = convertProfilePic(user.image)
             imageUrlMap[user.id] = url
           } catch (error) {
             console.error(`Error al obtener la imagen para el usuario ${user.id}:`, error)

@@ -3,7 +3,7 @@ import { TopContent } from './TopContent'
 import styles from '../css/Content.module.css'
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
-import { getProfilePic } from '../common/Services'
+import { convertProfilePic } from '../common/Services'
 import { API_HOST } from '@/config'
 
 export interface Props {
@@ -38,8 +38,8 @@ export const Content: React.FC<Props> = ({ user }) => {
   useEffect(() => {
     if (user != null) {
       getColumns()
-
-      const fetchProfilePic = async (): Promise<void> => {
+      setImageUrl(convertProfilePic(user.image))
+      /* const fetchProfilePic = async (): Promise<void> => {
         try {
           const url = await getProfilePic(user.id) // Asegúrate de tener userId definido
           setImageUrl(url)
@@ -48,7 +48,7 @@ export const Content: React.FC<Props> = ({ user }) => {
         }
       }
 
-      void fetchProfilePic()
+      void fetchProfilePic() */
     }
   }, [user])
 

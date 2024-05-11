@@ -6,8 +6,8 @@ import * as types from '../src/common/types'
 
 function App (): JSX.Element {
   const [isLogged, setIsLogged] = useState(false)
-  const [user, setUser] = useState<types.User>()
-  const [userId, setUserId] = useState<number>()
+  const [user, setUser] = useState<types.User>({ id: 0, name: '', email: '', image: '' })
+  const [userId, setUserId] = useState<number>(0)
   const handleLogin = (): void => {
     setIsLogged(!isLogged)
   }
@@ -25,12 +25,24 @@ function App (): JSX.Element {
         if (response.status === 200) {
           return await response.json()
         }
-      }).then((data) => {
-        console.log(data)
+      }).then(async (data) => {
         if (data.ok === true) {
-          setUser({ name: data.name, id: data.id })
-          // setUserId(data.id)
-          // console.log(data)
+          setUserId(data.id)
+          const getUserData = async (): Promise<void> => {
+            await fetch(`${API_HOST}/user/${userId}`, {
+              method: 'GET'
+            }).then(async (response) => {
+              return await response.json()
+            }).then((data) => {
+              if (data.response === true) {
+                const usuario: types.User = data.data
+                usuario.image = data.image
+                setUser(usuario)
+              }
+            })
+          }
+          await getUserData()
+
           setIsLogged(true)
         } else {
           setIsLogged(false)
@@ -40,7 +52,7 @@ function App (): JSX.Element {
       })
     }
     IsAuthenticated()
-  }, [isLogged])
+  }, [isLogged, userId])
 
   return (
     (isLogged)

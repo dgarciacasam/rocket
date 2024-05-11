@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getProfilePic, getProjects } from '../common/Services'
+import { convertProfilePic, getProjects } from '../common/Services'
 import { Avatar, AvatarFallback, AvatarImage } from '@/@/components/ui/avatar'
 import * as types from '../common/types'
 export interface Props {
@@ -17,11 +17,7 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav }) => {
   const [projects, setProjects] = useState<types.Project[]>([])
 
   useEffect(() => {
-    getProfilePic(user.id)
-      .then((url) => {
-        setImageUrl(url)
-      }).catch((error) => { throw error })
-
+    setImageUrl(convertProfilePic(user.image))
     getProjects(user.id)
       .then((response) => {
         setProjects(response)
@@ -79,14 +75,19 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav }) => {
         <div className='flex flex-col  w-full p-4'>
           <section className='h-full flex flex-col '>
             <p className='mb-2'>Proyectos</p>
-            {
+            <section className='grid grid-cols-2 gap-2'>
+              {
 
-              projects.map((project: types.Project) => (
-                <article className='border border-white w-6/12 m-2 p-2' key={project.id}>
-                  <h2>{project.name}</h2>
-                </article>
-              ))
-            }
+                projects.map((project: types.Project) => (
+
+                  <article className='border border-white w-6/12 m-2 p-2 w-full' key={project.id}>
+                    <h2>{project.name}</h2>
+                  </article>
+                ))
+
+              }
+            </section>
+
           </section>
 
           <section className='h-full'>
