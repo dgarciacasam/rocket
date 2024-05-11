@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
-import { getProfilePic } from '../common/Utils'
+import { getProfilePic } from '../common/Services'
 import { API_HOST } from '@/config'
 import { useDebounce } from '@uidotdev/usehooks'
-import { Calendar } from '@/components/ui/calendar'
-import { Button } from '@/components/ui/button'
+import { Calendar } from '@/@/components/ui/calendar'
+import { Button } from '@/@/components/ui/button'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@/components/ui/popover'
+} from '@/@/components/ui/popover'
 import { cn } from '@/@/lib/utils'
 import { format, isValid } from 'date-fns'
 const DEBOUNCE_TIME = 500
@@ -61,7 +61,7 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
   }, [users]) // Se ejecutará cada vez que users cambie
 
   useEffect(() => {
-    const updateTask = () => {
+    const updateTask = (): void => {
       const newTask = {
         title: debouncedTitle !== '' ? debouncedTitle : title,
         description: debouncedDescription !== '' ? debouncedDescription : description,
@@ -180,7 +180,7 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
               )}
             >
 
-              {isValid(FinishDate) ? format(FinishDate, 'PPP') : <span>Pick a date</span>}
+              {isValid(FinishDate) ? format(FinishDate, 'PPP') : <span>Hola</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className='w-auto p-0'>
@@ -196,7 +196,6 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
             />
           </PopoverContent>
         </Popover>
-
       </div>
     </div>
   )

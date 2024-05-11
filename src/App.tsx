@@ -6,8 +6,8 @@ import * as types from '../src/common/types'
 
 function App (): JSX.Element {
   const [isLogged, setIsLogged] = useState(false)
-  const [user, setUser] = useState<types.User>({ name: '', id: 0 })
-
+  const [user, setUser] = useState<types.User>()
+  const [userId, setUserId] = useState<number>()
   const handleLogin = (): void => {
     setIsLogged(!isLogged)
   }
@@ -26,8 +26,11 @@ function App (): JSX.Element {
           return await response.json()
         }
       }).then((data) => {
+        console.log(data)
         if (data.ok === true) {
           setUser({ name: data.name, id: data.id })
+          // setUserId(data.id)
+          // console.log(data)
           setIsLogged(true)
         } else {
           setIsLogged(false)

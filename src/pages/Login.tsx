@@ -75,7 +75,6 @@ export const Login = (props: loginProps): any => {
     <div className='flex justify-center items-center h-screen w-screen bg-[#2a2b2f]'>
 
       {(isLoading)
-
         ? <div>
           <h1>SPINNERQWEOFWQUUOHQWOUHOEUHFQUFOQ</h1>
         </div>

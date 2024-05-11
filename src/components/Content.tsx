@@ -3,7 +3,7 @@ import { TopContent } from './TopContent'
 import styles from '../css/Content.module.css'
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
-import { getProfilePic } from '../common/Utils'
+import { getProfilePic } from '../common/Services'
 import { API_HOST } from '@/config'
 
 export interface Props {
@@ -53,7 +53,7 @@ export const Content: React.FC<Props> = ({ user }) => {
   }, [user])
 
   return (
-    <div>
+    <div className='bg-[#2a2b2f]'>
       <TopContent username={user.name} imageUrl={imageUrl} />
       <section className=' flex flex-col pt-4'>
         <section className='flex justify-between border-b-2 border-solid border-[rgba(255,255,255,0.1)] mb-6'>

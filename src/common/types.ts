@@ -20,6 +20,7 @@ export interface User {
   email?: string
   id: number
   name: string
+  image: Blob
 }
 
 export interface Column {
@@ -40,4 +41,10 @@ export interface TopContentProps {
 
 export interface ImageUrls {
   [key: number]: string
+}
+
+export interface Project {
+  id: number
+  name: string
+  adminId: number
 }

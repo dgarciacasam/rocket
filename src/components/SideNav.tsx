@@ -19,7 +19,7 @@ export const SideNav: React.FC<SideNavProps> = ({ onLogout }) => {
   }
 
   return (
-    <nav className='flex flex-col bg-[#111215] w-20 h-[100%] fixed items-center '>
+    <nav className='flex flex-col bg-[#111215] w-20 h-screen fixed items-center '>
       <div className='mt-[1.5em] mb-2'>
         <svg
           className='icon icon-tabler icon-tabler-rocket'
