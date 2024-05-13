@@ -38,7 +38,7 @@ export const Content: React.FC<Props> = ({ user }) => {
   useEffect(() => {
     if (user != null) {
       getColumns()
-      setImageUrl(convertProfilePic(user.image))
+      setImageUrl(convertProfilePic(user.profilePic))
       /* const fetchProfilePic = async (): Promise<void> => {
         try {
           const url = await getProfilePic(user.id) // Asegúrate de tener userId definido
@@ -58,7 +58,7 @@ export const Content: React.FC<Props> = ({ user }) => {
       <section className=' flex flex-col pt-4'>
         <section className='flex justify-between border-b-2 border-solid border-[rgba(255,255,255,0.1)] mb-6'>
           <div className='flex'>
-            <button className={styles.active}>Board View</button>
+            <button className={styles.active}>Vista tarjetas</button>
 
             <button className='flex items-center'>
               <svg

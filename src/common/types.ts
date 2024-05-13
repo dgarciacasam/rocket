@@ -20,7 +20,7 @@ export interface User {
   email?: string
   id: number
   name: string
-  image: string
+  profilePic: string
 }
 
 export interface Column {
@@ -46,5 +46,7 @@ export interface ImageUrls {
 export interface Project {
   id: number
   name: string
+  description: string
   adminId: number
+  users: User[]
 }

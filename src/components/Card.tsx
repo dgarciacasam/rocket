@@ -58,13 +58,11 @@ export const Card: React.FC<types.Card> = ({
   return (
     <article className='bg-[#24262c] rounded-xl p-4 h-fit'>
       <div className='flex justify-between mb-2'>
-        <span>({counter})</span>
-        <input
-          type='text'
-          className='text-[rgba(255,255,255,0.4)] bg-[#24262c]'
-          value={titulo}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <div className='flex'>
+          <span>({counter})</span>
+          <p className='text-[rgba(255,255,255,0.4)] bg-[#24262c] ml-2 text-lg'>{titulo}</p>
+
+        </div>
         <button className='flex items-center' onClick={addNewTask}>
           <svg
             className='icon icon-tabler icon-tabler-plus bg-[rgba(255,255,255,0.1)] rounded-full p-1 mr-2'

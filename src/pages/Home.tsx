@@ -16,10 +16,14 @@ export const Home = (props: homeProps): any => {
     props.onLogout()
   }
 
-  const [showSidenav, setShowSidenav] = useState(true)
+  const sessionStorage = (window.sessionStorage.getItem('showSidenav') === 'true')
+  const [showSidenav, setShowSidenav] = useState<boolean>(sessionStorage)
 
   const handleShowSecondaryNav = (): void => {
-    setShowSidenav(!showSidenav)
+    const newShowSidenav = !showSidenav
+    setShowSidenav(newShowSidenav)
+
+    window.sessionStorage.setItem('showSidenav', newShowSidenav.toString())
   }
 
   const Router = (): any => {

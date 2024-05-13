@@ -2,10 +2,13 @@
 import { TopContentProps } from '../common/types'
 
 export const TopContent: React.FC<TopContentProps> = ({ username, imageUrl }): any => {
+  const today = new Date()
+  const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
   return (
     <div className='flex justify-between '>
       <h2 className='text-xl font-semibold'>
-        Welcome back, {username} ✌️
+        Bienvenido de nuevo, {username} ✌️
       </h2>
       <div className='flex items-center'>
         <a href='' className='mr-2'>
@@ -63,11 +66,11 @@ export const TopContent: React.FC<TopContentProps> = ({ username, imageUrl }): a
             <path d='M12 15v3' />
           </svg>
           <p className='font-semibold text-[rgba(255,255,255,0.3)] ml-2'>
-            05 Jan 2024
+            {today.getDate()} de {meses[today.getMonth()]} de {today.getFullYear()}
           </p>
           <img
             /* className='rounded-full size-8 ml-4' */
-            className='rounded-full size-10 ml-4'
+            className='rounded-full size-12 ml-4'
             src={imageUrl}
             alt='Imagen de perfil'
           />

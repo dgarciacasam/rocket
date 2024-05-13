@@ -45,7 +45,7 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
       await Promise.all(
         users.map(async (user) => {
           try {
-            const url = convertProfilePic(user.image)
+            const url = convertProfilePic(user.profilePic)
             imageUrlMap[user.id] = url
           } catch (error) {
             console.error(`Error al obtener la imagen para el usuario ${user.id}:`, error)
