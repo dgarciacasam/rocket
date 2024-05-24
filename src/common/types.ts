@@ -1,19 +1,34 @@
 import { ReactNode } from 'react'
 
+export interface LoginObject {
+  username: string
+  password: string
+}
+
+export interface RegisterObject extends LoginObject {
+  email: string
+}
+
 export interface Task {
   id: number
   title: string
   description: string
   finishDate: Date
   users: User[]
-  onDeleteTask?: (id: number) => void
+  onDeleteTask: (id: number) => void
+  onUpdateTask: (task: Task, id: number) => void
   columnId: number
+  projectId: number | null
 }
 
 export interface Card {
   id: number
   title: string
-  datosTarjetas: Task[] | null
+  data: Task[] | null
+  userId: number
+  handleCreateTask: (id: number, task: Task) => void
+  handleDeleteTask: (id: number) => void
+  handleUpdateTask: (task: Task, id: number) => void
 }
 
 export interface User {
@@ -49,4 +64,17 @@ export interface Project {
   description: string
   adminId: number
   users: User[]
+  tasks: Task[]
+}
+
+export interface AnimatedTooltipData {
+  id: number
+  name: string
+  designation: string
+  image: string
+}
+
+export interface response {
+  ok: boolean
+  message: string
 }

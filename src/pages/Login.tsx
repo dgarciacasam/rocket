@@ -1,5 +1,7 @@
 import { KeyboardEvent, useState } from 'react'
-import { API_HOST } from '@/config'
+import { BarLoader } from 'react-spinners'
+import { login, register } from '@/common/Services'
+import { toast } from 'sonner'
 interface loginProps {
   onLogin: () => void
 
@@ -14,61 +16,37 @@ export const Login = (props: loginProps): any => {
 
   const handleLoginMode = (): void => {
     setIsRegistering(!isRegistering)
-    setEmail('')
   }
 
-  async function login (): Promise<void> {
-    if (username !== '' && password !== '') {
-      setIsLoading(true)
-      const usuario = {
-        name: username,
-        password
-      }
-      await fetch(`${API_HOST}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(usuario),
-        credentials: 'include'
+  const handleLogin = async (): Promise<void> => {
+    setIsLoading(true)
+    login({ username, password })
+      .then((data) => {
+        if (data != null) {
+          props.onLogin()
+        }
+      }).catch(
+        () => {
+          // toast.error('Error de conexión')
+        }
+      ).finally(() => {
+        setIsLoading(false)
       })
-        .then((response) => {
-          setIsLoading(false)
-          if (response.status === 200) {
-            props.onLogin()
-          } else {
-            console.log('Ha ocurrido un error')
-          }
-        })
-    }
   }
 
-  async function register (): Promise<void> {
-    if (username !== '' && password !== '' && email !== '') {
-      setIsLoading(true)
-      const usuario = {
-        email,
-        name: username,
-        password
-      }
-      await fetch(`${API_HOST}/user`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(usuario),
-        credentials: 'include'
+  const handleRegister = (): void => {
+    setIsLoading(true)
+    register({ email, username, password })
+      .then((data) => {
+        if (data != null) {
+          props.onLogin()
+        }
+      }).catch((error) => {
+        console.log(error)
       })
-        .then(async (response) => {
-          setIsLoading(false)
-          if (response.status === 200) {
-            return await response.json()
-          } else {
-            console.log('Ha ocurrido un error')
-          }
-        }).then((data) => {
-          if (data.response === true) {
-            props.onLogin()
-          }
-          console.log(data)
-        })
-    }
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   return (
@@ -76,7 +54,7 @@ export const Login = (props: loginProps): any => {
 
       {(isLoading)
         ? <div>
-          <h1>SPINNERQWEOFWQUUOHQWOUHOEUHFQUFOQ</h1>
+          <BarLoader color='#ffffff' width='400px' height='8px' />
         </div>
         : (isRegistering)
           ? <div className='flex flex-col bg-[#111215] rounded-xl w-96 p-8'>
@@ -106,15 +84,15 @@ export const Login = (props: loginProps): any => {
               className='mb-4 text-black rounded-l p-1'
               type='password'
               name='password'
-              onKeyDown={function (event: KeyboardEvent) { if (event.key === 'Enter') register() }}
+              onKeyDown={function (event: KeyboardEvent) { if (event.key === 'Enter') handleRegister() }}
               placeholder='Password'
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
             />
 
             <button
-              className='flex align-center border-white bg-black rounded-full mb-2'
-              onClick={register}
+              className='flex align-center border-white bg-black rounded-full mb-2 button'
+              onClick={handleRegister}
             >
               Register
             </button>
@@ -142,15 +120,15 @@ export const Login = (props: loginProps): any => {
               className='mb-4 text-black rounded-l p-1'
               type='password'
               name='password'
-              onKeyDown={function (event: KeyboardEvent) { if (event.key === 'Enter') login() }}
+              onKeyDown={function (event: KeyboardEvent) { if (event.key === 'Enter') handleLogin() }}
               placeholder='Password'
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
             />
 
             <button
-              className='flex align-center border-white bg-black rounded-full mb-2'
-              onClick={login}
+              className='flex align-center border-white bg-black rounded-full mb-2 button'
+              onClick={handleLogin}
             >
               Log in
             </button>

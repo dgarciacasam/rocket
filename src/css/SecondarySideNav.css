@@ -17,12 +17,6 @@ nav>div>button>i {
     font-size: 12px;
 }
 
-.dropdown-container>a {
-    color: rgba(255, 255, 255, 0.4);
-    margin-top: 0.5rem;
-    margin-left: 1rem;
-}
-
 .active {
     display: flex;
     flex-direction: column;
@@ -42,13 +36,19 @@ div[className="dropdown-container"] > a:hover {
     color: white;
 }
 
-button:hover {
+.button:hover {
     border-radius: 30px;
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
 }
 
-button {
+.button {
     padding-inline: 10px !important;
     padding-block: 4px !important;
 }
+
+button[name="day"]:hover{
+    background-color:#1f2024;
+    font-weight: bold;
+}
+

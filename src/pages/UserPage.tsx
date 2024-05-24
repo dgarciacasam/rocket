@@ -1,40 +1,35 @@
 import { useEffect, useState } from 'react'
-import { convertProfilePic, getProjects } from '../common/Services'
 import { Avatar, AvatarFallback, AvatarImage } from '@/@/components/ui/avatar'
 import * as types from '../common/types'
-import AvatarGroup, { AvatarProps } from '@atlaskit/avatar-group'
-import { API_HOST } from '@/config'
+import { AnimatedTooltip } from '@/components/AvatarGroup'
+import { convertProfilePic } from '@/common/Services'
 
-export interface Props {
-  user: types.User
+interface Props {
+  user: types.User | undefined
   showSidenav: boolean
+  projects: types.Project[]
+  handleCreateProject: () => void
 }
 
-export const UserPage: React.FC<Props> = ({ user, showSidenav }) => {
+export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleCreateProject }) => {
   const [imageUrl, setImageUrl] = useState('')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassowrd] = useState('')
   const [isEditing, setIsEditing] = useState(false)
-  const [projects, setProjects] = useState<types.Project[]>([])
-  const [data, setData] = useState<AvatarProps[]>([])
+  const [data, setData] = useState<types.AnimatedTooltipData[]>([])
   useEffect(() => {
     setImageUrl(convertProfilePic(user.profilePic))
-    getProjects(user.id)
-      .then(async (response: types.Project[]) => {
-        const projectsResponse = response
-        setProjects(projectsResponse)
-        console.log(projectsResponse)
-        projectsResponse.forEach((proyecto: types.Project) => {
-          const dataAvatar: AvatarProps[] = proyecto.users.map((usuario: types.User) => ({
-            key: usuario.id,
-            name: usuario.name,
-            src: convertProfilePic(usuario.profilePic)
-          }))
-          setData(dataAvatar)
-        })
-      }).catch((error) => { throw error })
+    projects.forEach((proyecto: types.Project) => {
+      const dataAvatar = proyecto.users.map((usuario: types.User) => ({
+        id: usuario.id,
+        name: usuario.name ?? 'Nombre',
+        designation: usuario.email ?? 'Email',
+        image: convertProfilePic(usuario.profilePic)
+      }))
+      setData(dataAvatar)
+    })
   }, [user])
 
   const saveUser = async (): Promise<void> => {
@@ -99,11 +94,12 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav }) => {
             <section className='grid grid-cols-2 gap-2'>
               {
                 projects.map((project: types.Project) => (
-
                   <article className='border border-white rounded w-6/12 p-2 w-full' key={project.id}>
                     <h2>{project.name}</h2>
                     <p className='pt-2 text-gray-300'>{project.description ?? 'Esto es un ejemplo de una descripción del proyecto'}</p>
-                    <AvatarGroup data={data} appearance='stack' />
+                    <div className='flex flex-row items-center justify-start'>
+                      <AnimatedTooltip items={data} />
+                    </div>
                   </article>
                 ))
               }

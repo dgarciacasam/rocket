@@ -4,53 +4,40 @@ import styles from '../css/Content.module.css'
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
 import { convertProfilePic } from '../common/Services'
-import { API_HOST } from '@/config'
+import { useSearch } from 'wouter'
+import { getCard, updateParams } from '@/common/utils'
 
 export interface Props {
   user: types.User
+  projects: types.Project[]
+  selectedProjectName: String
+  handleDeleteTask: (id: number) => void
+  handleCreateTask: (id: number, task: types.Task) => void
+  handleUpdateTask: (task: types.Task, id: number) => void
+
 }
 
-export const Content: React.FC<Props> = ({ user }) => {
-  const [columns, setColumns] = useState<types.Column[]>()
-  const [imageUrl, setImageUrl] = useState('https://github.com/saddxni.png')
-
-  const getColumns = (): void => {
-    fetch(
-      `${API_HOST}/column/${user.id}`,
-      {
-        method: 'GET'
-      }
-    )
-      .then(async (response) => {
-        if (response.status === 200) {
-          return await response.json()
-        }
-      })
-      .then((data) => {
-        if (data != null) {
-          setColumns(data)
-        }
-      }).catch(error => {
-        console.log(error)
-      })
-  }
+export const Content: React.FC<Props> = ({ user, projects, selectedProjectName, handleDeleteTask, handleCreateTask, handleUpdateTask }) => {
+  const [imageUrl, setImageUrl] = useState('')
+  const [view, setView] = useState('')
+  const search = useSearch()
+  const [project, setProject] = useState('')
 
   useEffect(() => {
     if (user != null) {
-      getColumns()
       setImageUrl(convertProfilePic(user.profilePic))
-      /* const fetchProfilePic = async (): Promise<void> => {
-        try {
-          const url = await getProfilePic(user.id) // Asegúrate de tener userId definido
-          setImageUrl(url)
-        } catch (error) {
-          console.error('Error fetching profile picture:', error)
-        }
-      }
-
-      void fetchProfilePic() */
     }
   }, [user])
+
+  useEffect(() => {
+    if (search === '') {
+      updateParams({ view: 'board' }, search)
+    }
+
+    const param = new URLSearchParams(search)
+    setView(param.get('view') ?? '')
+    setProject(param.get('project') ?? '')
+  }, [search])
 
   return (
     <div className='bg-[#2a2b2f]'>
@@ -58,11 +45,13 @@ export const Content: React.FC<Props> = ({ user }) => {
       <section className=' flex flex-col pt-4'>
         <section className='flex justify-between border-b-2 border-solid border-[rgba(255,255,255,0.1)] mb-6'>
           <div className='flex'>
-            <button className={styles.active}>Vista tarjetas</button>
-
-            <button className='flex items-center'>
+            <button
+              className={`button ${(view === 'board') ? styles.active : 'flex items-center'}`}
+              onClick={() => { updateParams({ view: 'board' }, search) }}
+            >
               <svg
-                className='icon icon-tabler icon-tabler-plus bg-[rgba(255,255,255,0.1)] rounded-full p-1 mr-2'
+                xmlns='http://www.w3.org/2000/svg'
+                className='icon icon-tabler icon-tabler-layout-list mr-1'
                 width='20'
                 height='20'
                 viewBox='0 0 24 24'
@@ -73,31 +62,75 @@ export const Content: React.FC<Props> = ({ user }) => {
                 strokeLinejoin='round'
               >
                 <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-                <path d='M12 5l0 14' />
-                <path d='M5 12l14 0' />
+                <path d='M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v2a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z' />
+                <path d='M4 14m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v2a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z' />
               </svg>
-              Add view
+              Vista tarjetas
+            </button>
+
+            <button className={`button ${(view === 'table') ? styles.active : 'flex items-center'}`} onClick={() => { updateParams({ view: 'table' }, search) }}>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                className='icon icon-tabler icon-tabler-brand-trello mr-1'
+                width='20'
+                height='20'
+                viewBox='0 0 24 24'
+                strokeWidth='1.5'
+                stroke='#ffffff'
+                fill='none'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              >
+                <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                <path d='M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z' />
+                <path d='M7 7h3v10h-3z' />
+                <path d='M14 7h3v6h-3z' />
+              </svg>
+              Vista de tabla
             </button>
           </div>
-          <div className='flex justify-center'>
-            <button>Filter</button>
-            <button>Sort</button>
-            <button>3puntos</button>
-            <button>New template</button>
+          <div>
+            <p className='text-xl'>Proyecto - {(project === 'all') ? 'Todos' : selectedProjectName}</p>
           </div>
+
         </section>
-        <section className='grid md:grid-cols-3 gap-8 grid-cols-2 h-fit'>
-          {columns !== undefined
-            ? columns.map((column: types.Column) => (
+
+        {(view === 'board')
+          ? (projects !== null && projects.length !== 0)
+            ? <section className='grid md:grid-cols-3 gap-8 grid-cols-2 h-fit'>
               <Card
-                key={column.id}
-                title={column.name}
-                id={column.id}
-                datosTarjetas={column.taskList}
+                key={1}
+                title='Sin empezar'
+                id={1}
+                data={getCard(1, projects)}
+                userId={user.id}
+                handleCreateTask={handleCreateTask}
+                handleDeleteTask={handleDeleteTask}
+                handleUpdateTask={handleUpdateTask}
               />
-            ))
-            : ''}
-        </section>
+              <Card
+                key={2}
+                title='En proceso'
+                id={2}
+                data={getCard(2, projects)}
+                userId={user.id}
+                handleCreateTask={handleCreateTask}
+                handleDeleteTask={handleDeleteTask}
+                handleUpdateTask={handleUpdateTask}
+              />
+              <Card
+                key={3}
+                title='Finalizado'
+                id={3}
+                data={getCard(3, projects)}
+                userId={user.id}
+                handleCreateTask={handleCreateTask}
+                handleDeleteTask={handleDeleteTask}
+                handleUpdateTask={handleUpdateTask}
+              />
+            </section>
+            : ''
+          : <div>VISTA DE TABLA</div>}
       </section>
     </div>
   )

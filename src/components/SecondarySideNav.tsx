@@ -1,87 +1,50 @@
 import '../css/SecondarySideNav.css'
-
-function toggleClass (event: React.MouseEvent<HTMLButtonElement>): void {
-  ; (event.target as Element).classList.toggle('button-active')
-  const icono = (event.target as Element).querySelector('i')
-  icono?.classList.toggle('fa-angle-right')
-  icono?.classList.toggle('fa-angle-down')
-
-  if ((event.target as Element).nextElementSibling != null) {
-    const dropdownMenu: HTMLDivElement = (event.target as Element)
-      .nextElementSibling as HTMLDivElement
-    if (dropdownMenu.classList.contains('dropdown-container')) {
-      dropdownMenu.classList.toggle('active')
-      dropdownMenu.classList.toggle('hidden')
-    }
-  }
-}
-
+import * as types from 'src/common/types'
+import { updateParams } from '@/common/utils'
+import { useSearch } from 'wouter'
+import { useEffect } from 'react'
 interface Props {
   handlerIsShown: () => void
   isShown: boolean
+  data: types.Project[]
 }
 
 export const SecondarySideNav = (props: Props) => {
-  const teams: string[] = ['Loh mejoreh', 'Sosio te rajo', 'Equipito 2024 🔥']
-  const projects: string[] = ['Proyecto 1', 'Proyecto 2', 'Proyecto 3']
-  const showSidenav: boolean = props.isShown
-
+  const search = useSearch()
   const isNavOpen = (): void => {
     props.handlerIsShown()
   }
 
   return (
-    <div className={'fixed flex items-center justify-center h-screen  ' + (!showSidenav ? ' w-0 ml-0' : ' ml-20 w-72 ')}>
-      <nav className={'bg-[#222327] w-72 px-8 h-screen justify-between py-[1.5rem] fixed lg:flex lg:flex-col' + (!showSidenav ? ' invisible' : ' ')}>
+    <div className={'fixed flex items-center justify-center h-screen  ' + (!props.isShown ? ' w-0 ml-0' : ' ml-20 w-72 ')}>
+      <nav className={'bg-[#222327] w-72 px-8 h-screen justify-between py-[1.5rem] fixed lg:flex lg:flex-col' + (!props.isShown ? ' invisible' : ' ')}>
         <div className='flex flex-col'>
           <div className='flex justify-between items-start mb-3'>
-            <h1 className='text-2xl font-semibold'>Projects</h1>
-            <a className='h-full flex' href='create-project'>
+            <h1 className='text-2xl font-semibold'>Proyectos</h1>
+            <a className='h-full flex hover:bg-white' href='create-project'>
               <i className='fa-solid fa-plus self-center' />
             </a>
           </div>
 
-          <button className='dropdown-button' onClick={toggleClass}>
-            Team
-            <i className='fa-solid fa-angle-right' />
-          </button>
-
-          <div className='dropdown-container hidden'>
-            {teams.map((cadena, index) => (
-              <a key={index} href={`#${cadena}`}>
-                {cadena}
-              </a>
-            ))}
+          <div className='flex flex-col text-left'>
+            <button className='button' key={0} onClick={() => { updateParams({ project: 'all' }, search) }}>
+              Todos los proyectos
+            </button>
+            {Array.isArray(props.data)
+              ? (
+                props.data.map((project: types.Project) => (
+                  <button className='button' key={project.id} onClick={() => { updateParams({ project: project.id }, search) }}>
+                    {project.name}
+                  </button>
+                ))
+              )
+              : (
+                <></>
+              )}
           </div>
-
-          <button className='dropdown-button' onClick={toggleClass}>
-            Projects
-            <i className='fa-solid fa-angle-right' />
-          </button>
-
-          <div className='dropdown-container hidden'>
-            {projects.map((cadena, index) => (
-              <a key={index} href={`#${cadena}`}>
-                {cadena}
-              </a>
-            ))}
-          </div>
-
-          <button className='dropdown-button' onClick={toggleClass}>
-            Tasks
-            <i className='fa-solid fa-angle-right' />
-          </button>
-          <button className='dropdown-button' onClick={toggleClass}>
-            Reminders
-            <i className='fa-solid fa-angle-right' />
-          </button>
-          <button className='dropdown-button' onClick={toggleClass}>
-            Messengers
-            <i className='fa-solid fa-angle-right' />
-          </button>
         </div>
       </nav>
-      <button onClick={isNavOpen} className={'flex items-center justify-center w-auto min-w-12 h-12 px-2 hover:rounded-none hover:bg-transparent' + (!showSidenav ? ' ml-48' : ' ml-80 ')}>
+      <button onClick={isNavOpen} className={'button flex items-center justify-center w-auto min-w-12 h-12 px-2 hover:rounded-none hover:bg-transparent ' + (!props.isShown ? ' ml-48' : ' ml-80 ')}>
         <svg
           className='icon icon-tabler icon-tabler-chevron-compact-left'
           width='32'

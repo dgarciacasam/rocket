@@ -9,3 +9,9 @@ html {
       color:white;
       background-color:#2a2b2f;
   }
+
+  
+  
+  body{
+    overflow-x: hidden;
+  }

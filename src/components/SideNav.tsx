@@ -1,4 +1,3 @@
-import { API_HOST } from '@/config'
 import { SideNavButton } from './SideNavButton'
 
 interface SideNavProps {
@@ -6,18 +5,6 @@ interface SideNavProps {
 }
 
 export const SideNav: React.FC<SideNavProps> = ({ onLogout }) => {
-  function logout (): void {
-    fetch(`${API_HOST}/logout`, {
-      method: 'GET',
-      headers: {},
-      credentials: 'include'
-    }).catch(error => {
-      console.log(error)
-    })
-    onLogout()
-    window.location.assign('http://localhost:5173/')
-  }
-
   return (
     <nav className='flex flex-col bg-[#111215] w-20 h-screen fixed items-center '>
       <div className='mt-[1.5em] mb-2'>
@@ -75,81 +62,6 @@ export const SideNav: React.FC<SideNavProps> = ({ onLogout }) => {
       </SideNavButton>
       <SideNavButton href='#'>
         <svg
-          className='icon icon-tabler icon-tabler-calendar'
-          width='34'
-          height='34'
-          viewBox='0 0 24 24'
-          strokeWidth='1.5'
-          stroke='#ffffff'
-          fill='none'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        >
-          <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-          <path d='M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z' />
-          <path d='M16 3v4' />
-          <path d='M8 3v4' />
-          <path d='M4 11h16' />
-          <path d='M11 15h1' />
-          <path d='M12 15v3' />
-        </svg>
-      </SideNavButton>
-
-      <SideNavButton href='#'>
-        <svg
-          className='icon icon-tabler icon-tabler-chart-line'
-          width='34'
-          height='34'
-          viewBox='0 0 24 24'
-          strokeWidth='1.5'
-          stroke='#ffffff'
-          fill='none'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        >
-          <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-          <path d='M4 19l16 0' />
-          <path d='M4 15l4 -6l4 2l4 -5l4 4' />
-        </svg>
-      </SideNavButton>
-      <SideNavButton href='#'>
-        <svg
-          className='icon icon-tabler icon-tabler-cloud-upload'
-          width='34'
-          height='34'
-          viewBox='0 0 24 24'
-          strokeWidth='1.5'
-          stroke='#ffffff'
-          fill='none'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        >
-          <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-          <path d='M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1' />
-          <path d='M9 15l3 -3l3 3' />
-          <path d='M12 12l0 9' />
-        </svg>
-      </SideNavButton>
-      <SideNavButton href='#'>
-        <svg
-          className='icon icon-tabler icon-tabler-map'
-          width='34'
-          height='34'
-          viewBox='0 0 24 24'
-          strokeWidth='1.5'
-          stroke='#ffffff'
-          fill='none'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        >
-          <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-          <path d='M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13' />
-          <path d='M9 4v13' />
-          <path d='M15 7v13' />
-        </svg>
-      </SideNavButton>
-      <SideNavButton href='#'>
-        <svg
           className='icon icon-tabler icon-tabler-adjustments-horizontal'
           width='34'
           height='34'
@@ -174,10 +86,10 @@ export const SideNav: React.FC<SideNavProps> = ({ onLogout }) => {
       </SideNavButton>
 
       <button
-        onClick={logout}
+        onClick={onLogout}
         className='mt-[1.5rem]
       w-12 h-12 flex justify-center items-center
-      rounded-full hover:bg-[rgba(255,255,255,0.1)] cursor-pointer'
+      rounded-full hover:bg-[rgba(255,255,255,0.1)] cursor-pointer button'
       >
         <svg
           className='icon icon-tabler icon-tabler-logout-2'

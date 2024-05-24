@@ -1,10 +1,11 @@
 // import { User } from '../common/types'
+import { useState } from 'react'
 import { TopContentProps } from '../common/types'
 
 export const TopContent: React.FC<TopContentProps> = ({ username, imageUrl }): any => {
   const today = new Date()
   const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-
+  const [project, setProject] = useState('')
   return (
     <div className='flex justify-between '>
       <h2 className='text-xl font-semibold'>
