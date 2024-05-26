@@ -2,16 +2,19 @@ import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/@/components/ui/avatar'
 import * as types from '../common/types'
 import { AnimatedTooltip } from '@/components/AvatarGroup'
-import { convertProfilePic } from '@/common/Services'
+import { convertProfilePic, getUsers } from '@/common/Services'
+import Swal from 'sweetalert2'
 
 interface Props {
-  user: types.User | undefined
+  user: types.User
   showSidenav: boolean
   projects: types.Project[]
-  handleCreateProject: () => void
+  handleCreateProject: (project: types.Project) => void
+  handleUpdateProject: (project: types.Project) => void
+  handleDeleteProject: (id: number) => void
 }
 
-export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleCreateProject }) => {
+export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleCreateProject, handleUpdateProject, handleDeleteProject }) => {
   const [imageUrl, setImageUrl] = useState('')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
@@ -19,6 +22,8 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
   const [repeatPassword, setRepeatPassowrd] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [data, setData] = useState<types.AnimatedTooltipData[]>([])
+  const [editingUsers, setEditingUsers] = useState<boolean>(false)
+  const [users, setUsers] = useState<types.User[]>([])
   useEffect(() => {
     setImageUrl(convertProfilePic(user.profilePic))
     projects.forEach((proyecto: types.Project) => {
@@ -30,6 +35,13 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
       }))
       setData(dataAvatar)
     })
+
+    getUsers()
+      .then((response) => {
+        setUsers(response)
+      }).catch((error) => {
+        console.log(error)
+      })
   }, [user])
 
   const saveUser = async (): Promise<void> => {
@@ -58,6 +70,30 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
 
   const changeAvatar = (): void => {
     console.log('merequetengue')
+  }
+
+  const updateUsers = (): void => {
+    setEditingUsers(!editingUsers)
+  }
+
+  const deleteProject = (projectId: number): void => {
+    Swal.fire({
+      title: '¿Elimina proyecto?',
+      text: 'Se borrarán todas las tareas asociadas',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, eliminar proyecto!',
+      cancelButtonText: 'Cancelar',
+      background: '#111215',
+      color: '#ffffff'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        handleDeleteProject(projectId)
+      }
+    }).catch((error) => {
+      console.log(error)
+    })
   }
 
   return (
@@ -90,14 +126,79 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
         </div>
         <div className='flex flex-col  w-full p-4'>
           <section className='h-full flex flex-col '>
-            <h1 className='mb-2 text-xl'>Proyectos</h1>
+            <div className='flex justify-between mb-2'>
+              <h1 className=' text-xl'>Proyectos</h1>
+              <button className='button flex items-center hover:rounded' onClick={handleCreateProject}>
+                <svg
+                  className='icon icon-tabler icon-tabler-plus bg-[rgba(255,255,255,0.1)] rounded-full p-1 mr-2'
+                  width='20'
+                  height='20'
+                  viewBox='0 0 24 24'
+                  strokeWidth='1.5'
+                  stroke='#ffffff'
+                  fill='none'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                >
+                  <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                  <path d='M12 5l0 14' />
+                  <path d='M5 12l14 0' />
+                </svg>
+                Añadir proyecto
+              </button>
+            </div>
             <section className='grid grid-cols-2 gap-2'>
               {
                 projects.map((project: types.Project) => (
                   <article className='border border-white rounded w-6/12 p-2 w-full' key={project.id}>
-                    <h2>{project.name}</h2>
-                    <p className='pt-2 text-gray-300'>{project.description ?? 'Esto es un ejemplo de una descripción del proyecto'}</p>
-                    <div className='flex flex-row items-center justify-start'>
+                    <div className='flex justify-between'>
+                      <h2>{project.name}</h2>
+                      <div>
+                        <button className='p-1 rounded mr-1 hover:bg-[#111215]' onClick={() => { deleteProject(project.id) }}>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            className='icon icon-tabler icon-tabler-trash'
+                            width='24'
+                            height='24'
+                            viewBox='0 0 24 24'
+                            strokeWidth='2'
+                            stroke='currentColor'
+                            fill='none'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          >
+                            <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                            <path d='M4 7l16 0' />
+                            <path d='M10 11l0 6' />
+                            <path d='M14 11l0 6' />
+                            <path d='M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12' />
+                            <path d='M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3' />
+                          </svg>
+                        </button>
+                        <button className='p-1 rounded hover:bg-[#111215]'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            width='24'
+                            height='24'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            className='icon icon-tabler icons-tabler-outline icon-tabler-edit'
+                          >
+                            <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                            <path d='M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1' />
+                            <path d='M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z' />
+                            <path d='M16 5l3 3' />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <p className='pt-2 text-gray-300 max-w-72 mb-4'>{project.description ?? 'Esto es un ejemplo de una descripción del proyecto'}</p>
+                    <div className='cursor-pointer inline-flex' onClick={updateUsers}>
                       <AnimatedTooltip items={data} />
                     </div>
                   </article>
@@ -108,6 +209,40 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
           </section>
         </div>
       </div>
+      {(editingUsers)
+        ? <div className='swal2-container swal2-center swal2-backdrop-show overflow-y-auto '>
+          <div
+            aria-labelledby='swal2-title'
+            aria-describedby='swal2-html-container'
+            className='swal2-popup swal2-modal swal2-show grid bg-[#111215]'
+            tabIndex={-1}
+            role='dialog'
+            aria-live='assertive' aria-modal='true'
+          >
+            <h2 className='swal2-title block text-white' id='swal2-title '>Participantes del proyecto</h2>
+
+            <div className='swal2-html-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
+              {users.map((user: types.User) => (
+                <article key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px]'>
+                  <div className='flex flex-col justify-center items-center'>
+                    <Avatar className='size-12 border-2 border-stone-300 mb-2'>
+                      <AvatarImage src={convertProfilePic(user.profilePic)} />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    <span>{user.name}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className='swal2-actions flex '>
+              <div className='swal2-loader' />
+              <button type='button' className='swal2-confirm swal2-styled swal2-default-outline inline-block' style={{ backgroundColor: '#3085d6' }}>Si, eliminar proyecto!</button>
+              <button type='button' className='swal2-cancel swal2-styled swal2-default-outline inline-block' onClick={updateUsers}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+        : <></>}
+
     </section>
   )
 }

@@ -31,6 +31,7 @@
     "react-spinners": "^0.13.8",
     "shadcn-ui": "latest",
     "sonner": "^1.4.41",
+    "sweetalert2": "^11.11.0",
     "table": "^6.8.2",
     "tailwind-merge": "^2.3.0",
     "tailwindcss": "latest",

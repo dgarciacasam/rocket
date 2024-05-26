@@ -5,7 +5,7 @@ import { Route, useSearch } from 'wouter'
 import * as types from '../common/types'
 import { UserPage } from './UserPage'
 import { useEffect, useState } from 'react'
-import { createTask, deleteTask, getProjects, updateTask } from '@/common/Services'
+import { createTask, deleteProject, deleteTask, getProjects, updateTask } from '@/common/Services'
 import { BarLoader } from 'react-spinners'
 interface homeProps {
   onLogout: () => void
@@ -14,6 +14,7 @@ interface homeProps {
 
 export const Home = (props: homeProps) => {
   const [projects, setProjects] = useState<types.Project[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [staticProjects, setStaticProjects] = useState<types.Project[]>([])
   const [selectedProjectName, setSelectedProjectName] = useState<String>('Todos')
   const search = useSearch()
@@ -96,13 +97,31 @@ export const Home = (props: homeProps) => {
 
   }
 
+  const handleUpdateProject = (): void => {
+
+  }
+
+  const handleDeleteProject = (projectId: number): void => {
+    deleteProject(projectId)
+      .then((response) => {
+        if (response) {
+          setProjects(projects.filter((project: types.Project) => project.id !== projectId))
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+  }
+
   useEffect(() => {
     if (props.user.id !== 0) {
       getProjects(props.user.id).then(async (response: types.Project[]) => {
-        const projectResponse = response
-        setProjects(projectResponse)
-        setStaticProjects(projectResponse)
-      }).catch((error) => { throw error })
+        setProjects(response)
+        setStaticProjects(response)
+        setIsLoading(false)
+      }).catch((error) => {
+        console.log(error)
+        setIsLoading(false)
+      })
     }
   }, [props.user])
 
@@ -110,7 +129,6 @@ export const Home = (props: homeProps) => {
     const param = new URLSearchParams(search)
     const projectFilter = param.get('project') ?? ''
     if (projectFilter !== '') {
-      console.log(projectFilter)
       if (projectFilter === 'all') {
         setProjects(staticProjects)
         setSelectedProjectName('Todos')
@@ -120,23 +138,23 @@ export const Home = (props: homeProps) => {
         setSelectedProjectName(filteredProjects.at(0)?.name ?? 'Sin nombre')
       }
     }
-  }, [search])
+  }, [search, selectedProjectName])
 
   const Router = (): any => {
     return (
       <div className='h-dvh w-screen bg-[#2a2b2f]'>
         <SideNav onLogout={handleLogin} />
-        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={props.user} projects={projects} showSidenav={showSidenav} handleCreateProject={handleCreateProject} />} />
+        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={props.user} projects={projects} showSidenav={showSidenav} handleCreateProject={handleCreateProject} handleUpdateProject={handleUpdateProject} handleDeleteProject={handleDeleteProject} />} />
         <Route
           path='/' component={(propiedades) => <>
-            {(projects !== null && projects.length !== 0)
+            {(!isLoading && projects.length > 0)
               ? <div>
                 <SecondarySideNav handlerIsShown={handleShowSecondaryNav} isShown={showSidenav} data={staticProjects} />
                 <section className={'pt-[1.5rem] px-8 flex h-dvh flex-col' + (showSidenav ? ' lg:ml-[23rem] ml-20 ' : ' lg:ml-20 ml-0')}>
                   <Content {...propiedades} user={props.user} projects={projects} selectedProjectName={selectedProjectName} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} handleUpdateTask={handleUpdateTask} />
                 </section>
               </div>
-              : <div>
+              : <div className='flex h-dvh px-8 lg:ml-[23rem] ml-20 items-center'>
                 <BarLoader color='#ffffff' width='400px' height='8px' />
               </div>}
 

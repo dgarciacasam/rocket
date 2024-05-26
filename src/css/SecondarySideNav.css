@@ -4,19 +4,6 @@
     pointer-events: none;
 }
 
-
-nav>div>button {
-    margin-top: 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: rgba(255, 255, 255, 0.4);
-}
-
-nav>div>button>i {
-    font-size: 12px;
-}
-
 .active {
     display: flex;
     flex-direction: column;

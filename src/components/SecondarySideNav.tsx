@@ -26,14 +26,14 @@ export const SecondarySideNav = (props: Props) => {
             </a>
           </div>
 
-          <div className='flex flex-col text-left'>
-            <button className='button' key={0} onClick={() => { updateParams({ project: 'all' }, search) }}>
+          <div className='flex flex-col text-left p-4'>
+            <button className='text-left bg-black py-1 px-2 rounded mb-1' key={0} onClick={() => { updateParams({ project: 'all' }, search) }}>
               Todos los proyectos
             </button>
             {Array.isArray(props.data)
               ? (
                 props.data.map((project: types.Project) => (
-                  <button className='button' key={project.id} onClick={() => { updateParams({ project: project.id }, search) }}>
+                  <button className='text-left bg-black py-1 px-2 rounded mb-1' key={project.id} onClick={() => { updateParams({ project: project.id }, search) }}>
                     {project.name}
                   </button>
                 ))

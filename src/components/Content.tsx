@@ -46,7 +46,7 @@ export const Content: React.FC<Props> = ({ user, projects, selectedProjectName, 
         <section className='flex justify-between border-b-2 border-solid border-[rgba(255,255,255,0.1)] mb-6'>
           <div className='flex'>
             <button
-              className={`button ${(view === 'board') ? styles.active : 'flex items-center'}`}
+              className={`button hover:rounded ${(view === 'board') ? styles.active : 'flex items-center'}`}
               onClick={() => { updateParams({ view: 'board' }, search) }}
             >
               <svg
@@ -68,7 +68,7 @@ export const Content: React.FC<Props> = ({ user, projects, selectedProjectName, 
               Vista tarjetas
             </button>
 
-            <button className={`button ${(view === 'table') ? styles.active : 'flex items-center'}`} onClick={() => { updateParams({ view: 'table' }, search) }}>
+            <button className={`button ml-1 hover:rounded ${(view === 'table') ? styles.active : 'flex items-center ml-1 '}`} onClick={() => { updateParams({ view: 'table' }, search) }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 className='icon icon-tabler icon-tabler-brand-trello mr-1'

@@ -1,7 +1,6 @@
 import { KeyboardEvent, useState } from 'react'
 import { BarLoader } from 'react-spinners'
 import { login, register } from '@/common/Services'
-import { toast } from 'sonner'
 interface loginProps {
   onLogin: () => void
 

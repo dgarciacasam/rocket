@@ -97,6 +97,21 @@ export const logout = async (): Promise<{ ok: boolean }> => {
   })
 }
 
+export const getUsers = async (): Promise<types.User[]> => {
+  return await fetch(`${API_HOST}/user`, {
+    method: 'GET',
+    credentials: 'include'
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error('Error al recoger los usuarios')
+    }
+    return await response.json()
+  }).catch((error) => {
+    toast.error(error.message)
+    throw error
+  })
+}
+
 export const getProjects = async (userId: number): Promise<types.Project[]> => {
   const response = await fetch(`${API_HOST}/project/getProjecstByUser/${userId}`, {
     method: 'GET',
@@ -175,5 +190,56 @@ export const updateTask = async (task: types.Task, taskId: number): Promise<void
   }).catch((error) => {
     toast.error(error.message)
     throw error
+  })
+}
+
+export const updateProject = async (project: types.Project, projectId: number): Promise<void> => {
+  return await fetch(`${API_HOST}/project/${projectId} `, {
+    method: 'PUT',
+    credentials: 'include',
+    body: JSON.stringify(project),
+    headers: { 'Content-Type': 'application/json' }
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error('Error al actualizar la tarea')
+    }
+    toast.success('Se ha actualizado la tarea con éxito')
+  }).catch((error) => {
+    toast.error(error.message)
+    throw error
+  })
+}
+
+export const createProject = async (project: types.Project): Promise<void> => {
+  return await fetch(`${API_HOST}/task`, {
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify(project),
+    headers: { 'Content-Type': 'application/json' }
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error('Error al actualizar la tarea')
+    }
+    toast.success('Se ha creado el nuevo proyecto con éxito')
+  }).catch((error) => {
+    toast.error(error.message)
+    throw error
+  })
+}
+
+export const deleteProject = async (projectId: number): Promise<boolean> => {
+  return await fetch(`${API_HOST}/project/deleteProject/${projectId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' }
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error('Error al eliminar el proyecto')
+    }
+    toast.success('Se ha eliminado el proyecto con éxito')
+    return true
+  }).catch((error) => {
+    toast.error(error.message)
+    return false
   })
 }
