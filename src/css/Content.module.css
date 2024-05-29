@@ -5,3 +5,19 @@
     align-items: center;
     pointer-events: none;
 }
+
+.secondarySidenavList{
+    /*position:relative;
+    outline: 1px solid tomato;*/
+}
+
+.secondarySidenavList::before{
+/*position:absolute;
+left: -0.1rem;
+top: 0px;
+border-left: 2px solid red;
+border-bottom: 2px solid blue;
+content: '';
+width: 1.25rem;
+height: 1em ;*/
+}
