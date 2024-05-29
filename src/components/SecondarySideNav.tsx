@@ -1,16 +1,15 @@
 import '../css/SecondarySideNav.css'
+import styles from '../css/Content.module.css'
 import * as types from 'src/common/types'
-import { updateParams } from '@/common/utils'
 import { useSearch } from 'wouter'
-import { useEffect } from 'react'
 interface Props {
   handlerIsShown: () => void
+  handlerSelectedProject: (projectId: number) => void
   isShown: boolean
   data: types.Project[]
 }
 
 export const SecondarySideNav = (props: Props) => {
-  const search = useSearch()
   const isNavOpen = (): void => {
     props.handlerIsShown()
   }
@@ -21,26 +20,24 @@ export const SecondarySideNav = (props: Props) => {
         <div className='flex flex-col'>
           <div className='flex justify-between items-start mb-3'>
             <h1 className='text-2xl font-semibold'>Proyectos</h1>
-            <a className='h-full flex hover:bg-white' href='create-project'>
-              <i className='fa-solid fa-plus self-center' />
-            </a>
           </div>
 
           <div className='flex flex-col text-left p-4'>
-            <button className='text-left bg-black py-1 px-2 rounded mb-1' key={0} onClick={() => { updateParams({ project: 'all' }, search) }}>
-              Todos los proyectos
-            </button>
-            {Array.isArray(props.data)
-              ? (
-                props.data.map((project: types.Project) => (
-                  <button className='text-left bg-black py-1 px-2 rounded mb-1' key={project.id} onClick={() => { updateParams({ project: project.id }, search) }}>
-                    {project.name}
-                  </button>
-                ))
-              )
-              : (
-                <></>
-              )}
+            <ul className='leading-[1.75em]'>
+              {Array.isArray(props.data)
+                ? (
+                  props.data.map((project: types.Project) => (
+                    <li key={project.id} className={`${styles.SecondarySideNavList}`}>
+                      <button className='text-left bg-black py-1 px-2 rounded mb-2' key={project.id} onClick={() => { props.handlerSelectedProject(project.id) }}>
+                        {project.name}
+                      </button>
+                    </li>
+                  ))
+                )
+                : (
+                  <></>
+                )}
+            </ul>
           </div>
         </div>
       </nav>

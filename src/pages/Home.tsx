@@ -5,7 +5,7 @@ import { Route, useSearch } from 'wouter'
 import * as types from '../common/types'
 import { UserPage } from './UserPage'
 import { useEffect, useState } from 'react'
-import { createTask, deleteProject, deleteTask, getProjects, updateTask } from '@/common/Services'
+import { createProject, createTask, deleteProject, deleteTask, getProjects, updateTask } from '@/common/Services'
 import { BarLoader } from 'react-spinners'
 interface homeProps {
   onLogout: () => void
@@ -16,8 +16,8 @@ export const Home = (props: homeProps) => {
   const [projects, setProjects] = useState<types.Project[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [staticProjects, setStaticProjects] = useState<types.Project[]>([])
-  const [selectedProjectName, setSelectedProjectName] = useState<String>('Todos')
-  const search = useSearch()
+  const [selectedProject, setSelectedProject] = useState(0)
+
   function handleLogin (): void {
     props.onLogout()
   }
@@ -28,26 +28,19 @@ export const Home = (props: homeProps) => {
   const handleShowSecondaryNav = (): void => {
     const newShowSidenav = !showSidenav
     setShowSidenav(newShowSidenav)
-
     window.sessionStorage.setItem('showSidenav', newShowSidenav.toString())
   }
 
   const handleCreateTask = (userId: number, task: types.Task): void => {
-    const params = new URLSearchParams(search)
-    task.projectId = parseInt((params.get('project') ?? '0'))
+    task.projectId = selectedProject
 
     createTask(userId, task)
       .then((response) => {
         const projectId = response?.projectId ?? 0
 
-        // Encontrar el índice del proyecto correspondiente
-        const projectIndex = projects.findIndex(project => project.id === projectId)
-
-        // Verificar que el projectIndex es válido
-
-        // Crear una copia profunda de projects
-        const updatedProjects = projects.map((project, index) => {
-          if (index === projectIndex) {
+        // Crear una copia del array de proyectos
+        const updatedProjects = staticProjects.map((project) => {
+          if (project.id === projectId) {
             // Crear una copia del array de tareas y añadir la nueva tarea
             const updatedTasks = [...project.tasks, task]
             // Devolver el proyecto actualizado
@@ -57,24 +50,26 @@ export const Home = (props: homeProps) => {
             }
           }
           // Devolver el proyecto sin cambios
+          console.log(project)
           return project
         })
+
         task.users.push(props.user)
         // Actualizar el estado con los proyectos modificados
-        setProjects(updatedProjects)
+        setStaticProjects(updatedProjects)
       })
       .catch(() => { })
   }
 
   const handleDeleteTask = (id: number): void => {
     deleteTask(id).then(() => {
-      const updatedProjects = projects.map((project: types.Project) => {
+      const updatedProjects = staticProjects.map((project: types.Project) => {
         return {
           ...project,
           tasks: project.tasks.filter((task: types.Task) => task.id !== id)
         }
       })
-      setProjects(updatedProjects)
+      setStaticProjects(updatedProjects)
     }).catch(() => { })
   }
 
@@ -94,7 +89,22 @@ export const Home = (props: homeProps) => {
   }
 
   const handleCreateProject = (): void => {
-
+    const newProject = {
+      name: 'Nuevo proyecto',
+      description: 'Añade una descripción al nuevo proyecto',
+      adminId: props.user.id
+    }
+    createProject(props.user.id, newProject)
+      .then((response) => {
+        if (response !== null) {
+          const projectResponse: types.Project = response
+          projectResponse.users = [props.user]
+          setStaticProjects(projects => [...projects, projectResponse])
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   const handleUpdateProject = (): void => {
@@ -105,7 +115,7 @@ export const Home = (props: homeProps) => {
     deleteProject(projectId)
       .then((response) => {
         if (response) {
-          setProjects(projects.filter((project: types.Project) => project.id !== projectId))
+          setStaticProjects(staticProjects.filter((project: types.Project) => project.id !== projectId))
         }
       }).catch((error) => {
         console.log(error)
@@ -117,41 +127,37 @@ export const Home = (props: homeProps) => {
       getProjects(props.user.id).then(async (response: types.Project[]) => {
         setProjects(response)
         setStaticProjects(response)
-        setIsLoading(false)
       }).catch((error) => {
         console.log(error)
+      }).finally(() => {
         setIsLoading(false)
       })
     }
-  }, [props.user])
+  }, [props.user.id])
+
+  const handleSelectedProject = (projectId: number): void => {
+    setSelectedProject(projectId)
+  }
 
   useEffect(() => {
-    const param = new URLSearchParams(search)
-    const projectFilter = param.get('project') ?? ''
-    if (projectFilter !== '') {
-      if (projectFilter === 'all') {
-        setProjects(staticProjects)
-        setSelectedProjectName('Todos')
-      } else {
-        const filteredProjects = staticProjects.filter((project: types.Project) => project.id.toString() === projectFilter)
-        setProjects(filteredProjects)
-        setSelectedProjectName(filteredProjects.at(0)?.name ?? 'Sin nombre')
-      }
+    if (staticProjects.length > 0) {
+      const filteredProjects = staticProjects.filter((project: types.Project) => project.id === selectedProject)
+      setProjects(filteredProjects)
     }
-  }, [search, selectedProjectName])
+  }, [selectedProject, staticProjects])
 
   const Router = (): any => {
     return (
       <div className='h-dvh w-screen bg-[#2a2b2f]'>
         <SideNav onLogout={handleLogin} />
-        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={props.user} projects={projects} showSidenav={showSidenav} handleCreateProject={handleCreateProject} handleUpdateProject={handleUpdateProject} handleDeleteProject={handleDeleteProject} />} />
+        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={props.user} projects={staticProjects} handleCreateProject={handleCreateProject} handleUpdateProject={handleUpdateProject} handleDeleteProject={handleDeleteProject} />} />
         <Route
           path='/' component={(propiedades) => <>
-            {(!isLoading && projects.length > 0)
+            {(!isLoading)
               ? <div>
-                <SecondarySideNav handlerIsShown={handleShowSecondaryNav} isShown={showSidenav} data={staticProjects} />
+                <SecondarySideNav handlerIsShown={handleShowSecondaryNav} isShown={showSidenav} data={staticProjects} handlerSelectedProject={handleSelectedProject} />
                 <section className={'pt-[1.5rem] px-8 flex h-dvh flex-col' + (showSidenav ? ' lg:ml-[23rem] ml-20 ' : ' lg:ml-20 ml-0')}>
-                  <Content {...propiedades} user={props.user} projects={projects} selectedProjectName={selectedProjectName} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} handleUpdateTask={handleUpdateTask} />
+                  <Content {...propiedades} user={props.user} projects={projects} selectedProject={selectedProject} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} handleUpdateTask={handleUpdateTask} />
                 </section>
               </div>
               : <div className='flex h-dvh px-8 lg:ml-[23rem] ml-20 items-center'>

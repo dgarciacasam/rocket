@@ -1,21 +1,43 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/@/components/ui/avatar'
 import * as types from '../common/types'
 import { AnimatedTooltip } from '@/components/AvatarGroup'
 import { convertProfilePic, getUsers } from '@/common/Services'
 import Swal from 'sweetalert2'
+import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css' // Asegúrate de importar los estilos de ReactCrop
 
 interface Props {
   user: types.User
-  showSidenav: boolean
   projects: types.Project[]
-  handleCreateProject: (project: types.Project) => void
+  handleCreateProject: () => void
   handleUpdateProject: (project: types.Project) => void
   handleDeleteProject: (id: number) => void
 }
 
-export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleCreateProject, handleUpdateProject, handleDeleteProject }) => {
-  const [imageUrl, setImageUrl] = useState('')
+const ASPECT_RATIO = 1
+
+const centerAspectCrop = (
+  mediaWidth: number,
+  mediaHeight: number,
+  aspect: number
+) => {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: '%',
+        width: 90
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight
+    ),
+    mediaWidth,
+    mediaHeight
+  )
+}
+
+export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject, handleUpdateProject, handleDeleteProject }) => {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
@@ -24,8 +46,37 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
   const [data, setData] = useState<types.AnimatedTooltipData[]>([])
   const [editingUsers, setEditingUsers] = useState<boolean>(false)
   const [users, setUsers] = useState<types.User[]>([])
+  const [modalOpen, setModalOpen] = useState(false)
+  const [imgSrc, setImgSrc] = useState()
+  const [croppedImg, setCroppedImg] = useState()
+  const [crop, setCrop] = useState<Crop>()
+  const [aspect, setAspect] = useState<number>(ASPECT_RATIO)
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
+  const imgRef = useRef<HTMLImageElement>(null)
+  const blobUrlRef = useRef('')
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
+
+  const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('selectedFile')
+    if ((e.target.files != null) && e.target.files.length > 0) {
+      setCrop(undefined) // Makes crop preview update between images.
+      const reader = new FileReader()
+      reader.addEventListener('load', () => {
+        setImgSrc(reader.result?.toString() || '')
+      })
+      reader.readAsDataURL(e.target.files[0])
+      setModalOpen(true)
+    }
+  }
+
+  function onImageLoad (e: React.SyntheticEvent<HTMLImageElement>) {
+    if (aspect) {
+      const { width, height } = e.currentTarget
+      setCrop(centerAspectCrop(width, height, aspect))
+    }
+  }
+
   useEffect(() => {
-    setImageUrl(convertProfilePic(user.profilePic))
     projects.forEach((proyecto: types.Project) => {
       const dataAvatar = proyecto.users.map((usuario: types.User) => ({
         id: usuario.id,
@@ -45,13 +96,6 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
   }, [user])
 
   const saveUser = async (): Promise<void> => {
-    /* const usuario = {
-      id: user.id,
-      email,
-      name,
-      password
-    } */
-
     if (password !== '' && password === repeatPassword) {
       console.log('se modifica la contraseña: ' + password)
     }
@@ -59,17 +103,6 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
     if (name !== '') {
       console.log('se modifica nombre:' + name)
     }
-
-    /* await fetch(`http://localhost:8080/user/${user.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(usuario),
-      credentials: 'include'
-    }) */
-  }
-
-  const changeAvatar = (): void => {
-    console.log('merequetengue')
   }
 
   const updateUsers = (): void => {
@@ -96,21 +129,119 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
     })
   }
 
+  const triggerFileInput = (): void => {
+    document.getElementById('inputFile')?.click()
+  }
+
+  const onCropClick = async () => {
+    const image = imgRef.current
+    const previewCanvas = previewCanvasRef.current
+    if ((image == null) || (previewCanvas == null) || (completedCrop == null)) {
+      throw new Error('Crop canvas does not exist')
+    }
+
+    // This will size relative to the uploaded image
+    // size. If you want to size according to what they
+    // are looking at on screen, remove scaleX + scaleY
+    const scaleX = image.naturalWidth / image.width
+    const scaleY = image.naturalHeight / image.height
+
+    const offscreen = new OffscreenCanvas(completedCrop.width, completedCrop.height);
+    const ctx = offscreen.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(
+        image,
+        completedCrop.x * scaleX,
+        completedCrop.y * scaleY,
+        completedCrop.width * scaleX,
+        completedCrop.height * scaleY,
+        0,
+        0,
+        completedCrop.width,
+        completedCrop.height
+      );
+      const blob = await offscreen.convertToBlob({ type: 'image/png' })
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current)
+      }
+      blobUrlRef.current = URL.createObjectURL(blob)
+      // Set the data URL to the state
+      console.log(blobUrlRef)
+      setCroppedImg(blobUrlRef.current)
+      setModalOpen(false)
+      // Resto del código para manejar el blob...
+    } else {
+      throw new Error('No se pudo obtener el contexto 2D del OffscreenCanvas');
+    }
+  }
+
   return (
-    <section className={'pt-[1.5rem] px-72  flex h-screen flex-col' + (showSidenav ? 'lg:ml-[23rem] ml-20 ' : 'lg:ml-[20rem] ml-20')}>
+    <section className={'pt-[1.5rem] px-72  flex h-screen flex-col' + ('lg:ml-[20rem] ml-20')}>
       <div className='flex w-full'>
         <div className='flex flex-col content-center w-80 p-4'>
-          <div className='flex flex-col items-center justify-center cursor-pointer' onClick={changeAvatar}>
+          <div className='flex flex-col items-center justify-center cursor-pointer mb-2' onClick={triggerFileInput}>
             <div className='flex flex-col group relative'>
               <Avatar className='size-72 border-2 border-stone-300'>
-                <AvatarImage src={imageUrl} />
+                <AvatarImage src={croppedImg || convertProfilePic(user.profilePic)} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <p className='text-center bg-[#111215] w-[50%] rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-0.5 mt-1 justify-self-center self-center'>Modificar avatar</p>
+              <span className='absolute bottom-0 text-center bg-[#111215] w-[50%] rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-0.5 mt-1 justify-self-center self-center'>Modificar avatar</span>
             </div>
+            <input type='file' id='inputFile' style={{ display: 'none' }} onChange={onSelectFile} />
           </div>
-          <h1 className='text-2xl '>{user.name}</h1>
-          <h1>{user.email}</h1>
+          {
+            (modalOpen)
+              ? <div className='swal2-container swal2-center swal2-backdrop-show'>
+                <div
+                  aria-labelledby='swal2-title'
+                  aria-describedby='swal2-html-container'
+                  className='swal2-popup swal2-modal swal2-show grid bg-[#111215]'
+                  tabIndex={-1}
+                  role='dialog'
+                  aria-live='assertive' aria-modal='true'
+                >
+
+                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                    {!!imgSrc && (
+                      <><ReactCrop
+                        crop={crop}
+                        onChange={(_, percentCrop) => setCrop(percentCrop)}
+                        onComplete={(c) => setCompletedCrop(c)}
+                        aspect={aspect}
+                        circularCrop
+                        minHeight={100}
+                      >
+                        <img
+                          ref={imgRef}
+                          alt='Crop me'
+                          src={imgSrc}
+                          onLoad={onImageLoad}
+                        />
+                      </ReactCrop>
+                      </>
+                    )}
+                    {!(completedCrop == null) && (
+                      <canvas
+                        ref={previewCanvasRef}
+                        style={{
+                          display: 'none ',
+                          width: completedCrop.width,
+                          height: completedCrop.height
+                        }}
+                      />
+                    )}
+
+                  </div>
+                  <div className='swal2-actions flex '>
+                    <div className='swal2-loader' />
+                    <button type='button' className='swal2-confirm swal2-styled swal2-default-outline inline-block' style={{ backgroundColor: '#3085d6' }} onClick={onCropClick}>Guardar avatar</button>
+                    <button type='button' className='swal2-cancel swal2-styled swal2-default-outline inline-block' onClick={() => setModalOpen(false)}>Cancelar</button>
+                  </div>
+                </div>
+              </div>
+              : <></>
+          }
+
           {(isEditing)
             ? <div>
               <h1 className='text-xl mt-4'>Modificar nombre de usuario</h1>
@@ -119,16 +250,19 @@ export const UserPage: React.FC<Props> = ({ user, showSidenav, projects, handleC
               <input type='text' placeholder='Nueva contraseña' className='p-1 mb-4 w-48 text-black' onChange={(ev) => setPassword(ev.target.value)} />
               <input type='text' placeholder='Repita nueva contraseña' className='p-1 w-48 text-black' onChange={(ev) => setRepeatPassowrd(ev.target.value)} />
               <p>Las contraseñas deben coincidir</p>
-              <button className='w-48 rounded-none bg-white text-black hover:rounded-none' onClick={saveUser}>Guardar cambios</button>
+              <button className='w-48 rounded-none bg-white text-black hover:rounded-none' onClick={() => saveUser}>Guardar cambios</button>
               <button onClick={() => { setIsEditing(!isEditing) }}>Cancelar</button>
             </div>
-            : <button className='bg-[#1F2022] rounded mt-2 p-2 hover:rounded hover:bg-[#111215]' onClick={() => { setIsEditing(!isEditing) }}>Editar perfil</button>}
+            : <><h1 className='text-2xl '>{user.name}</h1>
+              <h1>{user.email}</h1>
+              <button className='bg-[#1F2022] rounded mt-2 p-2 hover:rounded hover:bg-[#111215]' onClick={() => { setIsEditing(!isEditing) }}>Editar perfil</button>
+            </>}
         </div>
         <div className='flex flex-col  w-full p-4'>
           <section className='h-full flex flex-col '>
             <div className='flex justify-between mb-2'>
               <h1 className=' text-xl'>Proyectos</h1>
-              <button className='button flex items-center hover:rounded' onClick={handleCreateProject}>
+              <button className='button flex items-center hover:rounded' onClick={() => handleCreateProject()}>
                 <svg
                   className='icon icon-tabler icon-tabler-plus bg-[rgba(255,255,255,0.1)] rounded-full p-1 mr-2'
                   width='20'

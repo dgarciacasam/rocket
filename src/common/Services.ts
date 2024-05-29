@@ -36,8 +36,18 @@ export const register = async (registerObject: types.RegisterObject): Promise<vo
     })
       .then(async (response) => {
         if (!response.ok) {
-          throw new Error('El usuario o la contraseña son incorrectos')
+          const errorResponse = await response.json()
+          if (response.status === 400 && errorResponse.errores !== null) {
+            // Lanza un error por cada error en la respuesta
+            console.log(errorResponse.errores)
+            for (const [field, message] of Object.entries(errorResponse.errores)) {
+              toast.error(message)
+            }
+            return
+          }
+          throw new Error('Error al registrar el usuario')
         }
+        toast.success('Se ha creado el usuario con éxito')
         return await response.json()
       }).catch((error) => {
         toast.error(error.message)
@@ -210,25 +220,25 @@ export const updateProject = async (project: types.Project, projectId: number): 
   })
 }
 
-export const createProject = async (project: types.Project): Promise<void> => {
-  return await fetch(`${API_HOST}/task`, {
+export const createProject = async (userId: number, project: { name: string, description: string, adminId: number }): Promise<types.Project | null> => {
+  return await fetch(`${API_HOST}/project/${userId}`, {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify(project),
     headers: { 'Content-Type': 'application/json' }
   }).then(async (response) => {
     if (!response.ok) {
-      throw new Error('Error al actualizar la tarea')
+      throw new Error('Error al crear la tarea')
     }
-    toast.success('Se ha creado el nuevo proyecto con éxito')
+    return await response.json()
   }).catch((error) => {
     toast.error(error.message)
-    throw error
+    return null
   })
 }
 
 export const deleteProject = async (projectId: number): Promise<boolean> => {
-  return await fetch(`${API_HOST}/project/deleteProject/${projectId}`, {
+  return await fetch(`${API_HOST}/project/${projectId}`, {
     method: 'DELETE',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' }

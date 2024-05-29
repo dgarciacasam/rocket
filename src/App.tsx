@@ -1,38 +1,55 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import * as types from '../src/common/types'
 import { Toaster } from 'sonner'
 import { isAuthenticated, logout } from './common/Services'
+import { BarLoader } from 'react-spinners'
+import useSWR from 'swr'
+
+async function getLoginStatus (_key: string): Promise<types.User | null> {
+  const loggedUser = await isAuthenticated()
+
+  if (loggedUser !== null) {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    return loggedUser
+  }
+
+  return null
+}
+
 function App (): JSX.Element {
-  const [isLogged, setIsLogged] = useState(false)
-  const [user, setUser] = useState<types.User>({ id: 0, name: '', profilePic: '' })
-  const handleLogin = (): void => {
-    setIsLogged(!isLogged)
+  const {
+    data: user,
+    isLoading,
+    error,
+    mutate
+  } = useSWR('user-data', getLoginStatus)
+
+  const isLogged = !(user == null)
+  const handleLogin = async (): Promise<void> => {
+    await mutate()
   }
 
   const handleLogout = (): void => {
-    logout().then((result) => {
-      if (result.ok) {
-        setIsLogged(false)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    logout()
+      .then(async (result) => {
+        if (result.ok) {
+          await mutate()
+        }
+      })
+      .catch((error) => {
+        throw error
+      })
   }
 
-  useEffect(() => {
-    isAuthenticated()
-      .then((currentUser) => {
-        if (currentUser !== null) {
-          setUser(currentUser)
-          setIsLogged(true)
-        }
-      }).catch((e) => {
-
-      })
-  }, [isLogged])
-
+  if (isLoading) {
+    return (
+      <div className='w-full h-screen flex items-center justify-center'>
+        <BarLoader color='#ffffff' width='400px' height='8px' />
+      </div>
+    )
+  }
   return (
     <React.StrictMode>
       <Toaster />
@@ -41,7 +58,7 @@ function App (): JSX.Element {
           <Home onLogout={handleLogout} user={user} />
         )
         : (
-          <Login onLogin={handleLogin} />
+          <Login onLogin={handleLogin as any} />
         )}
     </React.StrictMode>
   )

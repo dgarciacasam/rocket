@@ -6,37 +6,31 @@ import * as types from '../common/types'
 import { convertProfilePic } from '../common/Services'
 import { useSearch } from 'wouter'
 import { getCard, updateParams } from '@/common/utils'
+import { SectionIcon } from '@radix-ui/react-icons'
 
 export interface Props {
   user: types.User
   projects: types.Project[]
-  selectedProjectName: String
+  selectedProject: number
   handleDeleteTask: (id: number) => void
   handleCreateTask: (id: number, task: types.Task) => void
   handleUpdateTask: (task: types.Task, id: number) => void
-
 }
 
-export const Content: React.FC<Props> = ({ user, projects, selectedProjectName, handleDeleteTask, handleCreateTask, handleUpdateTask }) => {
+export const Content: React.FC<Props> = ({ user, projects, selectedProject, handleDeleteTask, handleCreateTask, handleUpdateTask }) => {
   const [imageUrl, setImageUrl] = useState('')
-  const [view, setView] = useState('')
+  const [view, setView] = useState('board')
   const search = useSearch()
-  const [project, setProject] = useState('')
 
   useEffect(() => {
     if (user != null) {
       setImageUrl(convertProfilePic(user.profilePic))
     }
-  }, [user])
+  }, [user.id])
 
   useEffect(() => {
-    if (search === '') {
-      updateParams({ view: 'board' }, search)
-    }
-
     const param = new URLSearchParams(search)
-    setView(param.get('view') ?? '')
-    setProject(param.get('project') ?? '')
+    setView(param.get('view') ?? 'board')
   }, [search])
 
   return (
@@ -90,47 +84,46 @@ export const Content: React.FC<Props> = ({ user, projects, selectedProjectName, 
             </button>
           </div>
           <div>
-            <p className='text-xl'>Proyecto - {(project === 'all') ? 'Todos' : selectedProjectName}</p>
+            <p className='text-xl'>Proyecto - {selectedProject}</p>
           </div>
 
         </section>
 
         {(view === 'board')
-          ? (projects !== null && projects.length !== 0)
-            ? <section className='grid md:grid-cols-3 gap-8 grid-cols-2 h-fit'>
-              <Card
-                key={1}
-                title='Sin empezar'
-                id={1}
-                data={getCard(1, projects)}
-                userId={user.id}
-                handleCreateTask={handleCreateTask}
-                handleDeleteTask={handleDeleteTask}
-                handleUpdateTask={handleUpdateTask}
-              />
-              <Card
-                key={2}
-                title='En proceso'
-                id={2}
-                data={getCard(2, projects)}
-                userId={user.id}
-                handleCreateTask={handleCreateTask}
-                handleDeleteTask={handleDeleteTask}
-                handleUpdateTask={handleUpdateTask}
-              />
-              <Card
-                key={3}
-                title='Finalizado'
-                id={3}
-                data={getCard(3, projects)}
-                userId={user.id}
-                handleCreateTask={handleCreateTask}
-                handleDeleteTask={handleDeleteTask}
-                handleUpdateTask={handleUpdateTask}
-              />
-            </section>
-            : ''
-          : <div>VISTA DE TABLA</div>}
+          ? <section className='grid md:grid-cols-3 gap-8 grid-cols-2 h-fit'>
+            <Card
+              key={1}
+              title='Sin empezar'
+              id={1}
+              data={getCard(1, projects)}
+              userId={user.id}
+              handleCreateTask={handleCreateTask}
+              handleDeleteTask={handleDeleteTask}
+              handleUpdateTask={handleUpdateTask}
+            />
+            <Card
+              key={2}
+              title='En proceso'
+              id={2}
+              data={getCard(2, projects)}
+              userId={user.id}
+              handleCreateTask={handleCreateTask}
+              handleDeleteTask={handleDeleteTask}
+              handleUpdateTask={handleUpdateTask}
+            />
+            <Card
+              key={3}
+              title='Finalizado'
+              id={3}
+              data={getCard(3, projects)}
+              userId={user.id}
+              handleCreateTask={handleCreateTask}
+              handleDeleteTask={handleDeleteTask}
+              handleUpdateTask={handleUpdateTask}
+            />
+          </section>
+
+          : <section />}
       </section>
     </div>
   )
