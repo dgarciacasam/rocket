@@ -131,19 +131,6 @@ export const getProjects = async (userId: number): Promise<types.Project[]> => {
   return projects
 }
 
-// Función que convierte la imagen en base64 en un blob que utilizar como imagen
-export const convertProfilePic = (base64Image: string): string => {
-  const decodedImage = atob(base64Image)
-  const ab = new ArrayBuffer(decodedImage.length)
-  const ia = new Uint8Array(ab)
-  for (let i = 0; i < decodedImage.length; i++) {
-    ia[i] = decodedImage.charCodeAt(i)
-  }
-  const blob = new Blob([ab], { type: 'image/jpeg' })
-  const imageUrl = window.URL.createObjectURL(blob)
-  return imageUrl
-}
-
 export const createTask = async (userId: number, newTask: any): Promise<types.Task | null> => {
   return await fetch(`${API_HOST}/task/${userId}`,
     {
@@ -203,8 +190,8 @@ export const updateTask = async (task: types.Task, taskId: number): Promise<void
   })
 }
 
-export const updateProject = async (project: types.Project, projectId: number): Promise<void> => {
-  return await fetch(`${API_HOST}/project/${projectId} `, {
+export const updateProject = async (project: types.Project): Promise<void> => {
+  return await fetch(`${API_HOST}/project/${project.id} `, {
     method: 'PUT',
     credentials: 'include',
     body: JSON.stringify(project),
@@ -251,5 +238,23 @@ export const deleteProject = async (projectId: number): Promise<boolean> => {
   }).catch((error) => {
     toast.error(error.message)
     return false
+  })
+}
+
+export const changeProfilePic = async (userId: number, profilePic: File): Promise<void> => {
+  const formData = new FormData()
+  formData.append('image', profilePic)
+
+  return await fetch(`${API_HOST}/user/setProfilePic/${userId}`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Error al modificar la imagen de perfil')
+    }
+    toast.success('Se ha modificado la imagen con éxito')
+  }).catch((error) => {
+    toast.error(error.message)
   })
 }
