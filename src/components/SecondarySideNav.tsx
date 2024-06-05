@@ -1,10 +1,10 @@
 import '../css/SecondarySideNav.css'
 import styles from '../css/Content.module.css'
 import * as types from 'src/common/types'
-import { useSearch } from 'wouter'
 interface Props {
   handlerIsShown: () => void
   handlerSelectedProject: (projectId: number) => void
+  selectedProject: number
   isShown: boolean
   data: types.Project[]
 }
@@ -16,27 +16,31 @@ export const SecondarySideNav = (props: Props) => {
 
   return (
     <div className={'fixed flex items-center justify-center h-screen  ' + (!props.isShown ? ' w-0 ml-0' : ' ml-20 w-72 ')}>
-      <nav className={'bg-[#222327] w-72 px-8 h-screen justify-between py-[1.5rem] fixed lg:flex lg:flex-col' + (!props.isShown ? ' invisible' : ' ')}>
+      <nav className={'bg-[#222327] w-72 px-6 h-screen justify-between py-[1.5rem] fixed lg:flex lg:flex-col' + (!props.isShown ? ' invisible' : ' ')}>
         <div className='flex flex-col'>
-          <div className='flex justify-between items-start mb-3'>
-            <h1 className='text-2xl font-semibold'>Proyectos</h1>
-          </div>
 
-          <div className='flex flex-col text-left p-4'>
-            <ul className='leading-[1.75em]'>
-              {Array.isArray(props.data)
-                ? (
-                  props.data.map((project: types.Project) => (
-                    <li key={project.id} className={`${styles.SecondarySideNavList}`}>
-                      <button className='text-left bg-black py-1 px-2 rounded mb-2' key={project.id} onClick={() => { props.handlerSelectedProject(project.id) }}>
-                        {project.name}
-                      </button>
-                    </li>
-                  ))
-                )
-                : (
-                  <></>
-                )}
+          <div className='flex flex-col text-left'>
+            <ul className={styles.tree}>
+              <li><h1 className='text-2xl font-semibold'>Proyectos</h1>
+                <ul className='leading-[1.75em]'>
+                  {Array.isArray(props.data)
+                    ? (
+                      props.data.map((project: types.Project) => (
+                        <li key={project.id} className={`${styles.SecondarySideNavList} ${styles.treeChildren}`}>
+                          <button
+                            className={`text-left py-1 px-2 rounded mb-2 border border-white hover:bg-black font-semibold ${(project.id === props.selectedProject) ? 'bg-black' : ''}`}
+                            key={project.id} onClick={() => { props.handlerSelectedProject(project.id) }}
+                          >
+                            {project.name}
+                          </button>
+                        </li>
+                      ))
+                    )
+                    : (
+                      <></>
+                    )}
+                </ul>
+              </li>
             </ul>
           </div>
         </div>
