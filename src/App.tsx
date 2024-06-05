@@ -36,6 +36,7 @@ function App (): JSX.Element {
       .then(async (result) => {
         if (result.ok) {
           await mutate()
+          window.history.replaceState({}, '', 'http://localhost:5173')
         }
       })
       .catch((error) => {
