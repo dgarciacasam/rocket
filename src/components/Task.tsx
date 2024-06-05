@@ -9,7 +9,7 @@ import {
 } from '@/@/components/ui/popover'
 
 import { AnimatedTooltip } from './AvatarGroup'
-import { convertProfilePic } from '@/common/Services'
+import { convertProfilePic } from '@/common/utils'
 const DEBOUNCE_TIME = 500
 
 export const Task: React.FC<types.Task> = ({ id, title, description, finishDate, onDeleteTask, onUpdateTask, users, columnId, projectId }) => {
