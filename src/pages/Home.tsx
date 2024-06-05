@@ -1,11 +1,11 @@
 import { SideNav } from '../components/SideNav'
 import { SecondarySideNav } from '../components/SecondarySideNav'
 import { Content } from '../components/Content'
-import { Route, useSearch } from 'wouter'
+import { Route } from 'wouter'
 import * as types from '../common/types'
 import { UserPage } from './UserPage'
 import { useEffect, useState } from 'react'
-import { createProject, createTask, deleteProject, deleteTask, getProjects, updateTask } from '@/common/Services'
+import { createProject, createTask, deleteProject, deleteTask, getProjects, updateProject, updateTask } from '@/common/Services'
 import { BarLoader } from 'react-spinners'
 interface homeProps {
   onLogout: () => void
@@ -17,7 +17,6 @@ export const Home = (props: homeProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [staticProjects, setStaticProjects] = useState<types.Project[]>([])
   const [selectedProject, setSelectedProject] = useState(0)
-
   function handleLogin (): void {
     props.onLogout()
   }
@@ -88,38 +87,34 @@ export const Home = (props: homeProps) => {
       }).catch(() => { })
   }
 
-  const handleCreateProject = (): void => {
+  const handleCreateProject = async (): Promise<void> => {
     const newProject = {
       name: 'Nuevo proyecto',
       description: 'Añade una descripción al nuevo proyecto',
       adminId: props.user.id
     }
-    createProject(props.user.id, newProject)
-      .then((response) => {
-        if (response !== null) {
-          const projectResponse: types.Project = response
-          projectResponse.users = [props.user]
-          setStaticProjects(projects => [...projects, projectResponse])
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    const response = await createProject(props.user.id, newProject)
+    if (response !== null) {
+      const projectResponse: types.Project = response
+      projectResponse.users = [props.user]
+      for (const task of projectResponse.tasks) {
+        task.users = [props.user]
+      }
+      console.log(projectResponse)
+      setStaticProjects(projects => [...projects, projectResponse])
+    }
   }
 
-  const handleUpdateProject = (): void => {
-
+  const handleUpdateProject = async (project: types.Project): Promise<void> => {
+    await updateProject(project)
   }
 
-  const handleDeleteProject = (projectId: number): void => {
-    deleteProject(projectId)
-      .then((response) => {
-        if (response) {
-          setStaticProjects(staticProjects.filter((project: types.Project) => project.id !== projectId))
-        }
-      }).catch((error) => {
-        console.log(error)
-      })
+  const handleDeleteProject = async (projectId: number): Promise<void> => {
+    const response = await deleteProject(projectId)
+    if (response) {
+      setStaticProjects(staticProjects.filter((project: types.Project) => project.id !== projectId))
+      setSelectedProject(0)
+    }
   }
 
   useEffect(() => {
@@ -136,6 +131,8 @@ export const Home = (props: homeProps) => {
   }, [props.user.id])
 
   const handleSelectedProject = (projectId: number): void => {
+    console.log(staticProjects)
+    console.log(`projectId: ${projectId}`)
     setSelectedProject(projectId)
   }
 
@@ -150,17 +147,17 @@ export const Home = (props: homeProps) => {
     return (
       <div className='h-dvh w-screen bg-[#2a2b2f]'>
         <SideNav onLogout={handleLogin} />
-        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={props.user} projects={staticProjects} handleCreateProject={handleCreateProject} handleUpdateProject={handleUpdateProject} handleDeleteProject={handleDeleteProject} />} />
+        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={props.user} projects={staticProjects} handleCreateProject={() => handleCreateProject} handleUpdateProject={() => handleUpdateProject} handleDeleteProject={() => handleDeleteProject} />} />
         <Route
           path='/' component={(propiedades) => <>
             {(!isLoading)
               ? <div>
-                <SecondarySideNav handlerIsShown={handleShowSecondaryNav} isShown={showSidenav} data={staticProjects} handlerSelectedProject={handleSelectedProject} />
+                <SecondarySideNav handlerIsShown={handleShowSecondaryNav} isShown={showSidenav} data={staticProjects} handlerSelectedProject={handleSelectedProject} selectedProject={selectedProject} />
                 <section className={'pt-[1.5rem] px-8 flex h-dvh flex-col' + (showSidenav ? ' lg:ml-[23rem] ml-20 ' : ' lg:ml-20 ml-0')}>
-                  <Content {...propiedades} user={props.user} projects={projects} selectedProject={selectedProject} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} handleUpdateTask={handleUpdateTask} />
+                  <Content {...propiedades} user={props.user} projects={projects} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} handleUpdateTask={handleUpdateTask} handleCreateProject={handleCreateProject} handleDeleteProject={handleDeleteProject} />
                 </section>
               </div>
-              : <div className='flex h-dvh px-8 lg:ml-[23rem] ml-20 items-center'>
+              : <div className='flex h-dvh w-full px-8 items-center justify-center'>
                 <BarLoader color='#ffffff' width='400px' height='8px' />
               </div>}
 

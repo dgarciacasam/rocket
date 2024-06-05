@@ -3,25 +3,24 @@ import { TopContent } from './TopContent'
 import styles from '../css/Content.module.css'
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
-import { convertProfilePic } from '../common/Services'
 import { useSearch } from 'wouter'
-import { getCard, updateParams } from '@/common/utils'
-import { SectionIcon } from '@radix-ui/react-icons'
-
+import { convertProfilePic, getCard, updateParams } from '@/common/utils'
 export interface Props {
   user: types.User
   projects: types.Project[]
-  selectedProject: number
+  // selectedProject: string
   handleDeleteTask: (id: number) => void
   handleCreateTask: (id: number, task: types.Task) => void
   handleUpdateTask: (task: types.Task, id: number) => void
+  handleCreateProject: () => Promise<void>
+  handleDeleteProject: (id: number) => Promise<void>
 }
 
-export const Content: React.FC<Props> = ({ user, projects, selectedProject, handleDeleteTask, handleCreateTask, handleUpdateTask }) => {
+export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, handleCreateTask, handleUpdateTask, handleCreateProject, handleDeleteProject }) => {
   const [imageUrl, setImageUrl] = useState('')
   const [view, setView] = useState('board')
   const search = useSearch()
-
+  const projectName = projects[0]?.name ?? ''
   useEffect(() => {
     if (user != null) {
       setImageUrl(convertProfilePic(user.profilePic))
@@ -38,7 +37,7 @@ export const Content: React.FC<Props> = ({ user, projects, selectedProject, hand
       <TopContent username={user.name} imageUrl={imageUrl} />
       <section className=' flex flex-col pt-4'>
         <section className='flex justify-between border-b-2 border-solid border-[rgba(255,255,255,0.1)] mb-6'>
-          <div className='flex'>
+          <div className='flex flex-grow basis-0'>
             <button
               className={`button hover:rounded ${(view === 'board') ? styles.active : 'flex items-center'}`}
               onClick={() => { updateParams({ view: 'board' }, search) }}
@@ -84,7 +83,54 @@ export const Content: React.FC<Props> = ({ user, projects, selectedProject, hand
             </button>
           </div>
           <div>
-            <p className='text-xl'>Proyecto - {selectedProject}</p>
+            <p className='text-2xl'>{projectName}</p>
+          </div>
+
+          <div className='flex flex-grow basis-0 justify-end'>
+
+            <button className='flex items-center button hover:rounded' onClick={handleCreateProject}>
+              <svg
+                width='20'
+                height='20'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round' className='icon icon-tabler icons-tabler-outline icon-tabler-table-plus mr-1'
+              >
+                <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                <path d='M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5' />
+                <path d='M3 10h18' />
+                <path d='M10 3v18' />
+                <path d='M16 19h6' />
+                <path d='M19 16v6' />
+              </svg>
+              Añadir proyecto
+            </button>
+            {(projects[0]?.id === 0)
+              ? <></>
+              : <button className='flex items-center button hover:rounded' onClick={async () => await handleDeleteProject(projects[0].id)}>
+                <svg
+                  width='20'
+                  height='20'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  className='icon icon-tabler icons-tabler-outline icon-tabler-table-minus mr-1'
+                >
+                  <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                  <path d='M12.5 21h-7.5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10' />
+                  <path d='M3 10h18' />
+                  <path d='M10 3v18' />
+                  <path d='M16 19h6' />
+                </svg>
+                Eliminar proyecto
+              </button>}
+
           </div>
 
         </section>
