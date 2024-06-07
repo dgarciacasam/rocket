@@ -10,6 +10,7 @@ import { BarLoader } from 'react-spinners'
 interface homeProps {
   onLogout: () => void
   user: types.User
+  handleUserUpdate: () => Promise<void>
 }
 
 export const Home = (props: homeProps) => {
@@ -75,7 +76,7 @@ export const Home = (props: homeProps) => {
   const handleUpdateTask = (task: types.Task, id: number): void => {
     updateTask(task, id)
       .then((response) => {
-        const updatedProjects = projects.map(project => {
+        const updatedProjects = staticProjects.map(project => {
           return {
             ...project,
             tasks: project.tasks.map(thisTask =>
@@ -83,7 +84,7 @@ export const Home = (props: homeProps) => {
             )
           }
         })
-        setProjects(updatedProjects)
+        setStaticProjects(updatedProjects)
       }).catch(() => { })
   }
 
@@ -93,7 +94,9 @@ export const Home = (props: homeProps) => {
       description: 'Añade una descripción al nuevo proyecto',
       adminId: props.user.id
     }
+    console.log('CREATE PROJECT')
     const response = await createProject(props.user.id, newProject)
+    console.log(response)
     if (response !== null) {
       const projectResponse: types.Project = response
       projectResponse.users = [props.user]
@@ -106,7 +109,12 @@ export const Home = (props: homeProps) => {
   }
 
   const handleUpdateProject = async (project: types.Project): Promise<void> => {
-    await updateProject(project)
+    const response = await updateProject(project)
+    if (response != null) {
+      setStaticProjects(prevProjects => {
+        return prevProjects.map(p => p.id === project.id ? { ...p, ...project } : p)
+      })
+    }
   }
 
   const handleDeleteProject = async (projectId: number): Promise<void> => {
@@ -147,7 +155,7 @@ export const Home = (props: homeProps) => {
     return (
       <div className='h-dvh w-screen bg-[#2a2b2f]'>
         <SideNav onLogout={handleLogin} />
-        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={props.user} projects={staticProjects} handleCreateProject={() => handleCreateProject} handleUpdateProject={() => handleUpdateProject} handleDeleteProject={() => handleDeleteProject} />} />
+        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={props.user} projects={staticProjects} handleCreateProject={handleCreateProject} handleUpdateProject={handleUpdateProject} handleDeleteProject={handleDeleteProject} handleUserUpdate={props.handleUserUpdate} />} />
         <Route
           path='/' component={(propiedades) => <>
             {(!isLoading)

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarImage } from '@/@/components/ui/avatar'
 import * as types from '../common/types'
 import { AnimatedTooltip } from '@/components/AvatarGroup'
-import { changeProfilePic, getUsers } from '@/common/Services'
+import { changeProfilePic, getUsers, updateUser } from '@/common/Services'
 import Swal from 'sweetalert2'
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css' // Asegúrate de importar los estilos de ReactCrop
@@ -11,9 +11,10 @@ import { convertProfilePic, getUsersData } from '@/common/utils'
 interface Props {
   user: types.User
   projects: types.Project[]
-  handleCreateProject: () => void
-  handleUpdateProject: (project: types.Project) => void
-  handleDeleteProject: (id: number) => void
+  handleCreateProject: () => Promise<void>
+  handleUpdateProject: (project: types.Project) => Promise<void>
+  handleDeleteProject: (id: number) => Promise<void>
+  handleUserUpdate: () => Promise<void>
 }
 
 const ASPECT_RATIO = 1
@@ -40,7 +41,7 @@ const centerAspectCrop = (
 // Con esto se filtra el array para que solo muestre los usuarios que no estén en la tarea
 // const filteredArray = array2.filter(obj2 => !array1.some(obj1 => obj1.id === obj2.id));
 
-export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject, handleUpdateProject, handleDeleteProject }) => {
+export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject, handleUpdateProject, handleDeleteProject, handleUserUpdate }) => {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
@@ -89,12 +90,48 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
   }, [user])
 
   const saveUser = async (): Promise<void> => {
+    let save = false
+    const newUser = {
+      id: user.id,
+      name: '',
+      password: '',
+      profilePic: ''
+    }
     if (password !== '' && password === repeatPassword) {
-      console.log('se modifica la contraseña: ' + password)
+      save = true
+      newUser.password = password
     }
 
-    if (name !== '') {
-      console.log('se modifica nombre:' + name)
+    if (name !== '' && name !== user.name) {
+      save = true
+      newUser.name = name
+    }
+
+    if (save !== null) {
+      // Lanzamos un modal para confirmar la contraseña y hacer login con el nuevo usuario
+      Swal.fire({
+        title: 'Modificar proyecto',
+        html: `<input type="password" id="confirmPassword" class="swal2-input" placeholder="Introduce la contraseña">
+          `,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Modificar proyecto',
+        cancelButtonText: 'Cancelar',
+        background: '#111215',
+        color: '#ffffff'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const confirmPassword = document.querySelector('#confirmPassword')
+          if (confirmPassword !== null && confirmPassword.value !== '') {
+            newUser.password = confirmPassword.value
+            await updateUser(newUser)
+            await handleUserUpdate()
+          }
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
     }
   }
 
@@ -115,7 +152,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
       color: '#ffffff'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        handleDeleteProject(projectId)
+        await handleDeleteProject(projectId)
       }
     }).catch((error) => {
       console.log(error)
@@ -149,7 +186,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
         }
 
         if (update) {
-          handleUpdateProject(project)
+          await handleUpdateProject(project)
         }
       }
     }).catch((error) => {
@@ -283,7 +320,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
                 <input type='text' placeholder='Repita nueva contraseña' className='p-1 w-full text-black mb-4 rounded' onChange={(ev) => setRepeatPassowrd(ev.target.value)} />
               </div>
               <div className='flex justify-between'>
-                <button className='py-2 px-4 rounded bg-white text-black hover:rounded hover:bg-[#111215] hover:text-white' onClick={() => saveUser}>Guardar cambios</button>
+                <button className='py-2 px-4 rounded bg-white text-black hover:rounded hover:bg-[#111215] hover:text-white' onClick={saveUser}>Guardar cambios</button>
                 <button className='py-2 px-4 rounded bg-white text-black hover:rounded hover:bg-[#111215] hover:text-white' onClick={() => { setIsEditing(!isEditing) }}>Cancelar</button>
               </div>
             </div>
@@ -296,7 +333,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
           <section className='h-full flex flex-col '>
             <div className='flex justify-between mb-2'>
               <h1 className=' text-xl'>Proyectos</h1>
-              <button className='button flex items-center hover:rounded' onClick={() => handleCreateProject()}>
+              <button className='button flex items-center hover:rounded' onClick={handleCreateProject}>
                 <svg
                   className='icon icon-tabler icon-tabler-plus bg-[rgba(255,255,255,0.1)] rounded-full p-1 mr-2'
                   width='20'
@@ -448,4 +485,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
 
     </section>
   )
+}
+function handleUpdateUser (user: types.User) {
+  throw new Error('Function not implemented.')
 }

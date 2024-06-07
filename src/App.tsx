@@ -9,7 +9,6 @@ import useSWR from 'swr'
 
 async function getLoginStatus (_key: string): Promise<types.User | null> {
   const loggedUser = await isAuthenticated()
-
   if (loggedUser !== null) {
     await new Promise(resolve => setTimeout(resolve, 1000))
     return loggedUser
@@ -44,6 +43,10 @@ function App (): JSX.Element {
       })
   }
 
+  const handleUserUpdate = async (): Promise<void> => {
+    await mutate()
+  }
+
   if (isLoading) {
     return (
       <div className='w-full h-screen flex items-center justify-center'>
@@ -51,16 +54,17 @@ function App (): JSX.Element {
       </div>
     )
   }
+
   return (
     <React.StrictMode>
       <Toaster />
       {isLogged
         ? (
-          <Home onLogout={handleLogout} user={user} />
-        )
+          <Home onLogout={handleLogout} handleUserUpdate={handleUserUpdate} user={user} />
+          )
         : (
           <Login onLogin={handleLogin as any} />
-        )}
+          )}
     </React.StrictMode>
   )
 }

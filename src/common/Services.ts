@@ -68,6 +68,7 @@ export const isAuthenticated = async (): Promise<types.User | null> => {
   })
     .then(async (response) => {
       if (!response.ok) {
+        console.log('error al autenticar')
         throw new Error('Error al autenticar')
       }
       return await response.json()
@@ -119,6 +120,23 @@ export const getUsers = async (): Promise<types.User[]> => {
   }).catch((error) => {
     toast.error(error.message)
     throw error
+  })
+}
+
+export const updateUser = async (user: types.User): Promise<types.User | null> => {
+  return await fetch(`${API_HOST}/user/${user.id}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(user)
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error('Error al recoger los usuarios')
+    }
+    return await response.json()
+  }).catch((error) => {
+    toast.error(error.message)
+    return null
   })
 }
 
@@ -190,7 +208,7 @@ export const updateTask = async (task: types.Task, taskId: number): Promise<void
   })
 }
 
-export const updateProject = async (project: types.Project): Promise<void> => {
+export const updateProject = async (project: types.Project): Promise<boolean | null> => {
   return await fetch(`${API_HOST}/project/${project.id} `, {
     method: 'PUT',
     credentials: 'include',
@@ -200,10 +218,10 @@ export const updateProject = async (project: types.Project): Promise<void> => {
     if (!response.ok) {
       throw new Error('Error al actualizar la tarea')
     }
-    toast.success('Se ha actualizado la tarea con éxito')
+    return true
   }).catch((error) => {
     toast.error(error.message)
-    throw error
+    return null
   })
 }
 
