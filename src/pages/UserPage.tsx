@@ -38,11 +38,8 @@ const centerAspectCrop = (
     mediaHeight
   )
 }
-// Con esto se filtra el array para que solo muestre los usuarios que no estén en la tarea
-// const filteredArray = array2.filter(obj2 => !array1.some(obj1 => obj1.id === obj2.id));
 
 export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject, handleUpdateProject, handleDeleteProject, handleUserUpdate }) => {
-  const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassowrd] = useState('')
@@ -58,6 +55,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
   const blobUrlRef = useRef('')
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const [filteredProjects, setFilteredProjects] = useState<types.Project[]>([])
+  const [projectUsers, setProjectUsers] = useState<types.User[]>([])
 
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if ((e.target.files != null) && e.target.files.length > 0) {
@@ -82,8 +80,8 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
 
     getUsers()
       .then((response) => {
-        // const filteredUsers = response.filter((userFilter: types.User) => userFilter.id !== user.id)
-        setUsers(response)
+        const filteredUsers = response.filter((userFilter: types.User) => userFilter.id !== user.id)
+        setUsers(filteredUsers)
       }).catch((error) => {
         console.log(error)
       })
@@ -449,7 +447,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
             <h2 className='swal2-title block text-white' id='swal2-title '>Participantes del proyecto</h2>
 
             <div className='swal2-html-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
-              {users.map((user: types.User) => (
+              {projectUsers.map((user: types.User) => (
                 <article key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px]'>
                   <div className='flex flex-col justify-center items-center'>
                     <Avatar className='size-12 border-2 border-stone-300 mb-2'>
@@ -485,7 +483,4 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
 
     </section>
   )
-}
-function handleUpdateUser (user: types.User) {
-  throw new Error('Function not implemented.')
 }
