@@ -3,13 +3,11 @@ import { TopContent } from './TopContent'
 import styles from '../css/Content.module.css'
 import { useEffect, useState } from 'react'
 import * as types from '../common/types'
-import { useSearch } from 'wouter'
-import { convertProfilePic, getCard, updateParams } from '@/common/utils'
+import { convertProfilePic, getCard } from '@/common/utils'
 import { TableView } from './tableView/TableView'
 export interface Props {
   user: types.User
   projects: types.Project[]
-  // selectedProject: string
   handleDeleteTask: (id: number) => void
   handleCreateTask: (id: number, task: types.Task) => void
   handleUpdateTask: (task: types.Task, id: number) => void
@@ -19,19 +17,19 @@ export interface Props {
 
 export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, handleCreateTask, handleUpdateTask, handleCreateProject, handleDeleteProject }) => {
   const [imageUrl, setImageUrl] = useState('')
-  const [view, setView] = useState('board')
-  const search = useSearch()
+  const [view, setView] = useState(sessionStorage.getItem('view') ?? 'board')
   const projectName = projects[0]?.name ?? ''
+
   useEffect(() => {
     if (user != null) {
       setImageUrl(convertProfilePic(user.profilePic))
     }
   }, [user.id])
 
-  useEffect(() => {
-    const param = new URLSearchParams(search)
-    setView(param.get('view') ?? 'board')
-  }, [search])
+  const putView = (view: string) => {
+    setView(view)
+    sessionStorage.setItem('view', view)
+  }
 
   return (
     <div className='bg-[#2a2b2f]'>
@@ -41,7 +39,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
           <div className='flex flex-grow basis-0'>
             <button
               className={`button hover:rounded ${(view === 'board') ? styles.active : 'flex items-center'}`}
-              onClick={() => { updateParams({ view: 'board' }, search) }}
+              onClick={() => { putView('board') }}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -62,7 +60,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
               Vista tarjetas
             </button>
 
-            <button className={`button ml-1 hover:rounded ${(view === 'table') ? styles.active : 'flex items-center ml-1 '}`} onClick={() => { updateParams({ view: 'table' }, search) }}>
+            <button className={`button ml-1 hover:rounded ${(view === 'table') ? styles.active : 'flex items-center ml-1 '}`} onClick={() => { putView('table') }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 className='icon icon-tabler icon-tabler-brand-trello mr-1'
@@ -150,7 +148,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
             />
             <Card
               key={2}
-              title='En proceso'
+              title='Pendiente'
               id={2}
               data={getCard(2, projects)}
               userId={user.id}
