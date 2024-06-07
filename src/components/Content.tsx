@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import * as types from '../common/types'
 import { useSearch } from 'wouter'
 import { convertProfilePic, getCard, updateParams } from '@/common/utils'
+import { TableView } from './tableView/TableView'
 export interface Props {
   user: types.User
   projects: types.Project[]
@@ -169,7 +170,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
             />
           </section>
 
-          : <section />}
+          : <TableView data={projects[0].tasks} handleUpdateTask={handleUpdateTask} />}
       </section>
     </div>
   )
