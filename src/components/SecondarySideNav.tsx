@@ -28,7 +28,7 @@ export const SecondarySideNav = (props: Props) => {
                       props.data.map((project: types.Project) => (
                         <li key={project.id} className={`${styles.SecondarySideNavList} ${styles.treeChildren}`}>
                           <button
-                            className={`text-left py-1 px-2 rounded mb-2 border border-white hover:bg-black font-semibold ${(project.id === props.selectedProject) ? 'bg-black' : ''}`}
+                            className={`text-left py-1 px-2 rounded mb-2 border border-white hover:bg-[#111215] font-semibold ${(project.id === props.selectedProject) ? 'bg-[#111215]' : ''}`}
                             key={project.id} onClick={() => { props.handlerSelectedProject(project.id) }}
                           >
                             {project.name}
