@@ -133,6 +133,7 @@ export const updateUser = async (user: types.User): Promise<types.User | null> =
     if (!response.ok) {
       throw new Error('Error al recoger los usuarios')
     }
+    toast.success('Se ha modificado el usuario con éxito')
     return await response.json()
   }).catch((error) => {
     toast.error(error.message)
