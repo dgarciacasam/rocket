@@ -111,7 +111,6 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
             <PopoverTrigger asChild>
               <button className='font-bold text-[rgba(255,255,255,0.7)] bg-[rgba(54,55,60,255)] rounded-full py-2 px-4 text-[14px] flex hover:text-white'>
                 <svg
-                  xmlns='http://www.w3.org/2000/svg'
                   width='20'
                   height='20'
                   viewBox='0 0 24 24'

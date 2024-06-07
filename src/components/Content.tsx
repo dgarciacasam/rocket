@@ -11,8 +11,8 @@ export interface Props {
   handleDeleteTask: (id: number) => void
   handleCreateTask: (id: number, task: types.Task) => void
   handleUpdateTask: (task: types.Task, id: number) => void
-  handleCreateProject: () => Promise<void>
-  handleDeleteProject: (id: number) => Promise<void>
+  handleCreateProject: () => void
+  handleDeleteProject: (id: number) => void
 }
 
 export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, handleCreateTask, handleUpdateTask, handleCreateProject, handleDeleteProject }) => {
@@ -26,7 +26,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
     }
   }, [user.id])
 
-  const putView = (view: string) => {
+  const putView = (view: string): void => {
     setView(view)
     sessionStorage.setItem('view', view)
   }
@@ -109,7 +109,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
             </button>
             {(projects[0]?.id === 0)
               ? <></>
-              : <button className='flex items-center button hover:rounded' onClick={async () => await handleDeleteProject(projects[0].id)}>
+              : <button className='flex items-center button hover:rounded' onClick={() => handleDeleteProject(projects[0].id)}>
                 <svg
                   width='20'
                   height='20'
@@ -168,7 +168,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
             />
           </section>
 
-          : <TableView data={projects[0].tasks} handleUpdateTask={handleUpdateTask} />}
+          : <TableView data={projects[0].tasks} userId={user.id} handleUpdateTask={handleUpdateTask} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} />}
       </section>
     </div>
   )
