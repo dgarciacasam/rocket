@@ -57,7 +57,7 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
       id: usuario.id,
       name: usuario.name ?? 'Nombre',
       designation: usuario.email ?? 'Email',
-      image: convertProfilePic(usuario.profilePic) ?? 'https://github.com/dgarciacasam.png'
+      image: convertProfilePic(usuario.profilePic) ?? ''
     }))
     setData(dataAvatar)
   }, [users])
