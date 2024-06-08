@@ -25,8 +25,9 @@ export const convertProfilePic = (base64Image: string): string => {
   return imageUrl
 }
 
-export function getUsersData (users: types.Users[]) {
-  const dataAvatar = users.map((usuario: types.User) => ({
+export function getUsersData (users: types.Users[], userId: number) {
+  const userData = users.filter((user: types.User) => user.id !== userId)
+  const dataAvatar = userData.map((usuario: types.User) => ({
     id: usuario.id,
     name: usuario.name ?? 'Nombre',
     designation: usuario.email ?? 'Email',
@@ -34,4 +35,17 @@ export function getUsersData (users: types.Users[]) {
   }))
 
   return dataAvatar
+}
+
+export function filterProjectTasks (projects: types.Project[], userId: number): types.Project[] {
+  return projects.map(project => {
+    const filteredTasks = project.tasks.filter(task =>
+      task.users.some(user => user.id === userId)
+    )
+
+    return {
+      ...project,
+      tasks: filteredTasks
+    }
+  })
 }
