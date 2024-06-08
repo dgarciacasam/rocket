@@ -7,6 +7,7 @@ import { UserPage } from './UserPage'
 import { useEffect, useState } from 'react'
 import { createProject, createTask, deleteProject, deleteTask, getProjects, updateProject, updateTask } from '@/common/Services'
 import { BarLoader } from 'react-spinners'
+import { filterProjectTasks } from '@/common/utils'
 interface homeProps {
   onLogout: () => void
   user: types.User
@@ -94,17 +95,17 @@ export const Home: React.FC<homeProps> = ({ onLogout, user, handleUserUpdate }) 
       description: 'Añade una descripción al nuevo proyecto',
       adminId: user.id
     }
-    console.log('CREATE PROJECT')
+
     const response = await createProject(user.id, newProject)
-    console.log(response)
+
     if (response !== null) {
       const projectResponse: types.Project = response
       projectResponse.users = [user]
       for (const task of projectResponse.tasks) {
         task.users = [user]
       }
-      console.log(projectResponse)
       setStaticProjects(projects => [...projects, projectResponse])
+      setSelectedProject(projectResponse.id)
     }
   }
 
@@ -128,8 +129,8 @@ export const Home: React.FC<homeProps> = ({ onLogout, user, handleUserUpdate }) 
   useEffect(() => {
     if (user.id !== 0) {
       getProjects(user.id).then(async (response: types.Project[]) => {
-        setProjects(response)
-        setStaticProjects(response)
+        const filtProjects = filterProjectTasks(response, user.id)
+        setStaticProjects(filtProjects)
       }).catch((error) => {
         console.log(error)
       }).finally(() => {
@@ -139,8 +140,6 @@ export const Home: React.FC<homeProps> = ({ onLogout, user, handleUserUpdate }) 
   }, [user.id])
 
   const handleSelectedProject = (projectId: number): void => {
-    console.log(staticProjects)
-    console.log(`projectId: ${projectId}`)
     setSelectedProject(projectId)
   }
 
