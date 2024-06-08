@@ -193,22 +193,22 @@ export const tableColumn = ({ handleUpdateTask, handleDeleteTask }: TableColumnP
       const currentStatus = info.getValue() as number
       const task = info.row.original
 
-      let bgColor = 'bg-emerald-50'
-      let textColor = 'text-green-800'
+      let bgColor = 'bg-red-50'
+      let textColor = 'text-red-700'
       if (currentStatus === 2) {
         bgColor = 'bg-yellow-50'
         textColor = 'text-yellow-600'
       }
       if (currentStatus === 3) {
-        bgColor = 'bg-red-50'
-        textColor = 'text-red-700'
+        bgColor = 'bg-emerald-50'
+        textColor = 'text-green-800'
       }
 
       return (
         <div className='flex justify-center'>
           <select
             value={currentStatus}
-            className={`${bgColor} ${textColor} rounded-full px-2 py-1 font-bold`}
+            className={`${bgColor} ${textColor} rounded-full px-2 py-1 font-bold text-center`}
             onChange={(e) => handleChangeColumn(e, task, handleUpdateTask)}
           >
             <option value='1'>Sin empezar</option>
