@@ -219,6 +219,7 @@ export const updateProject = async (project: types.Project): Promise<boolean | n
     if (!response.ok) {
       throw new Error('Error al actualizar la tarea')
     }
+    toast.success('Se ha actualizado el proyecto con éxito')
     return true
   }).catch((error) => {
     toast.error(error.message)
@@ -275,5 +276,70 @@ export const changeProfilePic = async (userId: number, profilePic: File): Promis
     toast.success('Se ha modificado la imagen con éxito')
   }).catch((error) => {
     toast.error(error.message)
+  })
+}
+
+export const createTaskUser = async (userId: number, taskId: number): Promise<boolean> => {
+  return await fetch(`${API_HOST}/taskUser/${userId}/${taskId}`, {
+    method: 'POST',
+    credentials: 'include'
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Error al añadir el usuario a la tarea')
+    }
+    toast.success('Se ha añadido el usuario con éxito a la tarea')
+    return true
+  }).catch((error) => {
+    toast.error(error.message)
+    return false
+  })
+}
+
+export const createUserProject = async (userId: number, projectId: number): Promise<boolean> => {
+  return await fetch(`${API_HOST}/userProject/${userId}/${projectId}`, {
+    method: 'POST',
+    credentials: 'include'
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Error al añadir el usuario al proyecto')
+    }
+
+    toast.success('Se ha añadido el usuario con éxito al proyecto')
+    return true
+  }).catch((error) => {
+    toast.error(error.message)
+    return false
+  })
+}
+
+export const deleteTaskUser = async (userId: number, taskId: number): Promise<boolean> => {
+  return await fetch(`${API_HOST}/taskUser/${userId}/${taskId}`, {
+    method: 'DELETE',
+    credentials: 'include'
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Error al eliminar el usuario')
+    }
+    toast.success('Se ha eliminado el usuario con éxito de la tarea')
+    return true
+  }).catch((error) => {
+    toast.error(error.message)
+    return false
+  })
+}
+
+export const deleteUserProject = async (userId: number, projectId: number): Promise<boolean> => {
+  return await fetch(`${API_HOST}/userProject/${userId}/${projectId}`, {
+    method: 'DELETE',
+    credentials: 'include'
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Error al eliminar el usuario')
+    }
+    toast.success('Se ha eliminado el usuario con éxito del proyecto')
+    return true
+  }).catch((error) => {
+    toast.error(error.message)
+    return false
   })
 }

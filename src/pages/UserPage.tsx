@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarImage } from '@/@/components/ui/avatar'
 import * as types from '../common/types'
 import { AnimatedTooltip } from '@/components/AvatarGroup'
-import { changeProfilePic, getUsers, updateUser } from '@/common/Services'
+import { changeProfilePic, createUserProject, deleteUserProject, getUsers, updateUser } from '@/common/Services'
 import Swal from 'sweetalert2'
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css' // Asegúrate de importar los estilos de ReactCrop
@@ -41,11 +41,9 @@ const centerAspectCrop = (
 
 export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject, handleUpdateProject, handleDeleteProject, handleUserUpdate }) => {
   const [name, setName] = useState('')
-  const [password, setPassword] = useState('')
-  const [repeatPassword, setRepeatPassowrd] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [editingUsers, setEditingUsers] = useState<boolean>(false)
-  const [users, setUsers] = useState<types.User[]>([])
+  const [staticUsers, setStaticUsers] = useState<types.User[]>([])
   const [modalOpen, setModalOpen] = useState(false)
   const [imgSrc, setImgSrc] = useState()
   const [croppedImg, setCroppedImg] = useState<String>()
@@ -56,6 +54,8 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const [filteredProjects, setFilteredProjects] = useState<types.Project[]>([])
   const [projectUsers, setProjectUsers] = useState<types.User[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<types.User[]>([])
+  const [editingProject, setEditingProject] = useState<types.Project>()
 
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if ((e.target.files != null) && e.target.files.length > 0) {
@@ -80,8 +80,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
 
     getUsers()
       .then((response) => {
-        const filteredUsers = response.filter((userFilter: types.User) => userFilter.id !== user.id)
-        setUsers(filteredUsers)
+        setStaticUsers(response)
       }).catch((error) => {
         console.log(error)
       })
@@ -95,11 +94,6 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
       password: '',
       profilePic: ''
     }
-    if (password !== '' && password === repeatPassword) {
-      save = true
-      newUser.password = password
-    }
-
     if (name !== '' && name !== user.name) {
       save = true
       newUser.name = name
@@ -133,8 +127,31 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
     }
   }
 
-  const updateUsers = (): void => {
+  const updateUsers = (currentProjectUsers: types.User[], currentProject: types.Project): void => {
+    setProjectUsers(currentProjectUsers)
+    setEditingProject(currentProject)
+    const userFilter = staticUsers.filter((user: types.User) => !currentProjectUsers.some((u: types.User) => u.id === user.id))
+    setFilteredUsers(userFilter)
     setEditingUsers(!editingUsers)
+  }
+
+  const updateProjectUsers = async (addUser: boolean, updatedUser: types.User, updatedProject: types.Project): Promise<void> => {
+    if (addUser) {
+      const response = await createUserProject(updatedUser.id, updatedProject.id)
+      if (response) {
+        const newUserList: types.User[] = projectUsers
+        newUserList.push(updatedUser)
+        updatedProject.users = newUserList
+        await handleUpdateProject(updatedProject)
+      }
+    } else {
+      const response = await deleteUserProject(updatedUser.id, updatedProject.id)
+      if (response) {
+        const newUserList: types.User[] = projectUsers.filter((user: types.User) => user.id !== updatedUser.id)
+        updatedProject.users = newUserList
+        await handleUpdateProject(updatedProject)
+      }
+    }
   }
 
   const deleteProject = (projectId: number): void => {
@@ -312,11 +329,6 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
                 <h1 className='text-xl mt-4'>Modificar nombre de usuario</h1>
                 <input type='text' placeholder='Nuevo nombre' className='p-1 mb-4 text-black w-full rounded' onChange={(ev) => setName(ev.target.value)} />
               </div>
-              <div>
-                <h1 className='text-xl'>Modificar contraseña</h1>
-                <input type='text' placeholder='Nueva contraseña' className='p-1 mb-4  w-full text-black rounded' onChange={(ev) => setPassword(ev.target.value)} />
-                <input type='text' placeholder='Repita nueva contraseña' className='p-1 w-full text-black mb-4 rounded' onChange={(ev) => setRepeatPassowrd(ev.target.value)} />
-              </div>
               <div className='flex justify-between'>
                 <button className='py-2 px-4 rounded bg-white text-black hover:rounded hover:bg-[#111215] hover:text-white' onClick={saveUser}>Guardar cambios</button>
                 <button className='py-2 px-4 rounded bg-white text-black hover:rounded hover:bg-[#111215] hover:text-white' onClick={() => { setIsEditing(!isEditing) }}>Cancelar</button>
@@ -397,7 +409,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
                             <path d='M16 5l3 3' />
                           </svg>
                         </button>
-                        <button className='p-1 rounded mr-1 hover:bg-[#111215]' onClick={updateUsers}>
+                        <button className='p-1 rounded mr-1 hover:bg-[#111215]' onClick={() => updateUsers(project.users, project)}>
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
                             width='24'
@@ -423,8 +435,8 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
                     </div>
 
                     <p className='pt-2 text-gray-300 max-w-72 mb-4'>{project.description ?? 'Esto es un ejemplo de una descripción del proyecto'}</p>
-                    <div className='cursor-pointer inline-flex' onClick={updateUsers}>
-                      <AnimatedTooltip items={getUsersData(project.users)} />
+                    <div className='cursor-pointer inline-flex' onClick={() => updateUsers(project.users, project)}>
+                      <AnimatedTooltip items={getUsersData(project.users, user.id)} />
                     </div>
                   </article>
                 ))
@@ -448,7 +460,7 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
 
             <div className='swal2-html-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
               {projectUsers.map((user: types.User) => (
-                <article key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px]'>
+                <article key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px] cursor-pointer hover:bg-[#ffe3e3]' onClick={async () => await updateProjectUsers(false, user, editingProject)}>
                   <div className='flex flex-col justify-center items-center'>
                     <Avatar className='size-12 border-2 border-stone-300 mb-2'>
                       <AvatarImage src={convertProfilePic(user.profilePic)} />
@@ -459,10 +471,10 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
               ))}
             </div>
 
-            <h2 className='swal2-title block text-white' id='swal2-title '>Usuarios</h2>
+            <h2 className='swal2-title block text-white' id='swal2-title '>Todos los usuarios</h2>
             <div className='swal2-html-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
-              {users.map((user: types.User) => (
-                <article key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px]'>
+              {filteredUsers.map((user: types.User) => (
+                <article key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px] cursor-pointer hover:bg-[#dcebfc]' onClick={async () => await updateProjectUsers(true, user, editingProject)}>
                   <div className='flex flex-col justify-center items-center'>
                     <Avatar className='size-12 border-2 border-stone-300 mb-2'>
                       <AvatarImage src={convertProfilePic(user.profilePic)} />
@@ -474,8 +486,8 @@ export const UserPage: React.FC<Props> = ({ user, projects, handleCreateProject,
             </div>
             <div className='swal2-actions flex '>
               <div className='swal2-loader' />
-              <button type='button' className='swal2-confirm swal2-styled swal2-default-outline inline-block' style={{ backgroundColor: '#3085d6' }}>Si, eliminar proyecto!</button>
-              <button type='button' className='swal2-cancel swal2-styled swal2-default-outline inline-block' onClick={updateUsers}>Cancelar</button>
+
+              <button type='button' className='swal2-cancel swal2-styled swal2-default-outline inline-block' onClick={() => { setEditingUsers(false) }}>Guardar cambios</button>
             </div>
           </div>
         </div>
