@@ -15,6 +15,7 @@ export interface Task {
   description: string
   finishDate: Date
   users: User[]
+  staticUsers: User[]
   onDeleteTask: (id: number) => void
   onUpdateTask: (task: Task, id: number) => void
   columnId: number
@@ -26,6 +27,7 @@ export interface Card {
   title: string
   data: Task[] | null
   userId: number
+  staticUsers: User[]
   handleCreateTask: (id: number, task: Task) => void
   handleDeleteTask: (id: number) => void
   handleUpdateTask: (task: Task, id: number) => void

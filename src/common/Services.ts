@@ -40,8 +40,8 @@ export const register = async (registerObject: types.RegisterObject): Promise<vo
           if (response.status === 400 && errorResponse.errores !== null) {
             // Lanza un error por cada error en la respuesta
             console.log(errorResponse.errores)
-            for (const [field, message] of Object.entries(errorResponse.errores)) {
-              toast.error(message)
+            for (const message of Object.values(errorResponse.errores)) {
+              toast.error(message as String)
             }
             return
           }
@@ -192,7 +192,7 @@ export const deleteTask = async (id: number): Promise<boolean> => {
     })
 }
 
-export const updateTask = async (task: types.Task, taskId: number): Promise<void> => {
+export const updateTask = async (task: types.Task, taskId: number): Promise<boolean> => {
   return await fetch(`${API_HOST}/task/${taskId} `, {
     method: 'PUT',
     credentials: 'include',
@@ -203,9 +203,10 @@ export const updateTask = async (task: types.Task, taskId: number): Promise<void
       throw new Error('Error al actualizar la tarea')
     }
     toast.success('Se ha actualizado la tarea con éxito')
+    return true
   }).catch((error) => {
     toast.error(error.message)
-    throw error
+    return false
   })
 }
 

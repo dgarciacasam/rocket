@@ -3,7 +3,7 @@ import * as types from '@/common/types'
 import { convertProfilePic } from '@/common/utils'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
 import { ColumnDef } from '@tanstack/react-table'
-import { AnimatedTooltip } from '../AvatarGroup'
+import { AnimatedTooltip } from '@/components/AvatarGroup'
 import { Button } from '@/@/components/ui/button'
 import { ChangeEvent } from 'react'
 type HandleUpdateTaskFunction = (task: types.Task, id: number) => void

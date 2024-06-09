@@ -25,7 +25,7 @@ export const convertProfilePic = (base64Image: string): string => {
   return imageUrl
 }
 
-export function getUsersData (users: types.Users[], userId: number) {
+export function getUsersData (users: types.User[], userId: number) {
   const userData = users.filter((user: types.User) => user.id !== userId)
   const dataAvatar = userData.map((usuario: types.User) => ({
     id: usuario.id,

@@ -6,6 +6,7 @@ export const Card: React.FC<types.Card> = ({
   title,
   data,
   userId,
+  staticUsers,
   handleDeleteTask,
   handleCreateTask,
   handleUpdateTask
@@ -24,6 +25,7 @@ export const Card: React.FC<types.Card> = ({
     users: [],
     columnId: id,
     projectId: null,
+    staticUsers,
     onDeleteTask: handleDeleteTask,
     onUpdateTask: handleUpdateTask
   }
@@ -61,6 +63,7 @@ export const Card: React.FC<types.Card> = ({
           <Task
             key={datos.id}
             id={datos.id}
+            staticUsers={staticUsers}
             title={datos.title}
             description={datos.description}
             finishDate={datos.finishDate}

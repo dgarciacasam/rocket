@@ -21,7 +21,6 @@ function App (): JSX.Element {
   const {
     data: user,
     isLoading,
-    error,
     mutate
   } = useSWR('user-data', getLoginStatus)
 
@@ -61,10 +60,10 @@ function App (): JSX.Element {
       {isLogged
         ? (
           <Home onLogout={handleLogout} handleUserUpdate={handleUserUpdate} user={user} />
-          )
+        )
         : (
           <Login onLogin={handleLogin as any} />
-          )}
+        )}
     </React.StrictMode>
   )
 }

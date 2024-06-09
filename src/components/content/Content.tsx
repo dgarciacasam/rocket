@@ -1,12 +1,13 @@
-import { Card } from './Card'
-import { TopContent } from './TopContent'
-import styles from '../css/Content.module.css'
+import { Card } from '../Card'
+import { TopContent } from '../TopContent'
+import styles from '@/css/Content.module.css'
 import { useEffect, useState } from 'react'
-import * as types from '../common/types'
+import * as types from '../../common/types'
 import { convertProfilePic, getCard } from '@/common/utils'
-import { TableView } from './tableView/TableView'
+import { TableView } from '@/components/content/tableView/TableView'
 export interface Props {
   user: types.User
+  staticUsers: types.User[]
   projects: types.Project[]
   handleDeleteTask: (id: number) => void
   handleCreateTask: (id: number, task: types.Task) => void
@@ -15,7 +16,7 @@ export interface Props {
   handleDeleteProject: (id: number) => void
 }
 
-export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, handleCreateTask, handleUpdateTask, handleCreateProject, handleDeleteProject }) => {
+export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDeleteTask, handleCreateTask, handleUpdateTask, handleCreateProject, handleDeleteProject }) => {
   const [imageUrl, setImageUrl] = useState('')
   const [view, setView] = useState(sessionStorage.getItem('view') ?? 'board')
   const projectName = projects[0]?.name ?? ''
@@ -139,6 +140,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
             <Card
               key={1}
               title='Sin empezar'
+              staticUsers={staticUsers}
               id={1}
               data={getCard(1, projects)}
               userId={user.id}
@@ -149,6 +151,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
             <Card
               key={2}
               title='Pendiente'
+              staticUsers={staticUsers}
               id={2}
               data={getCard(2, projects)}
               userId={user.id}
@@ -159,6 +162,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
             <Card
               key={3}
               title='Finalizado'
+              staticUsers={staticUsers}
               id={3}
               data={getCard(3, projects)}
               userId={user.id}
@@ -168,7 +172,7 @@ export const Content: React.FC<Props> = ({ user, projects, handleDeleteTask, han
             />
           </section>
 
-          : <TableView data={projects[0].tasks} userId={user.id} handleUpdateTask={handleUpdateTask} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} />}
+          : <TableView data={projects[0].tasks} staticUsers={staticUsers} userId={user.id} handleUpdateTask={handleUpdateTask} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} />}
       </section>
     </div>
   )

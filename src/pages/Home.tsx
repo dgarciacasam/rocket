@@ -1,11 +1,11 @@
 import { SideNav } from '../components/SideNav'
 import { SecondarySideNav } from '../components/SecondarySideNav'
-import { Content } from '../components/Content'
+import { Content } from '../components/content/Content'
 import { Route } from 'wouter'
 import * as types from '../common/types'
 import { UserPage } from './UserPage'
 import { useEffect, useState } from 'react'
-import { createProject, createTask, deleteProject, deleteTask, getProjects, updateProject, updateTask } from '@/common/Services'
+import { createProject, createTask, deleteProject, deleteTask, getProjects, getUsers, updateProject, updateTask } from '@/common/Services'
 import { BarLoader } from 'react-spinners'
 import { filterProjectTasks } from '@/common/utils'
 interface homeProps {
@@ -19,6 +19,7 @@ export const Home: React.FC<homeProps> = ({ onLogout, user, handleUserUpdate }) 
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [staticProjects, setStaticProjects] = useState<types.Project[]>([])
   const [selectedProject, setSelectedProject] = useState(0)
+  const [staticUsers, setStaticUsers] = useState<types.User[]>([])
   function handleLogin (): void {
     onLogout()
   }
@@ -74,22 +75,22 @@ export const Home: React.FC<homeProps> = ({ onLogout, user, handleUserUpdate }) 
     }).catch(() => { })
   }
 
-  const handleUpdateTask = (task: types.Task, id: number): void => {
-    updateTask(task, id)
-      .then((response) => {
-        const updatedProjects = staticProjects.map(project => {
-          return {
-            ...project,
-            tasks: project.tasks.map(thisTask =>
-              thisTask.id === id ? { ...thisTask, ...task } : thisTask
-            )
-          }
-        })
-        setStaticProjects(updatedProjects)
-      }).catch(() => { })
+  const handleUpdateTask = async (task: types.Task, id: number): Promise<void> => {
+    const response = await updateTask(task, id)
+    if (response) {
+      const updatedProjects = staticProjects.map(project => {
+        return {
+          ...project,
+          tasks: project.tasks.map(thisTask =>
+            thisTask.id === id ? { ...thisTask, ...task } : thisTask
+          )
+        }
+      })
+      setStaticProjects(updatedProjects)
+    }
   }
 
-  const handleCreateProject = async (): void => {
+  const handleCreateProject = async (): Promise<void> => {
     const newProject = {
       name: 'Nuevo proyecto',
       description: 'Añade una descripción al nuevo proyecto',
@@ -136,6 +137,13 @@ export const Home: React.FC<homeProps> = ({ onLogout, user, handleUserUpdate }) 
       }).finally(() => {
         setIsLoading(false)
       })
+
+      getUsers()
+        .then((response) => {
+          setStaticUsers(response)
+        }).catch((error) => {
+          console.log(error)
+        })
     }
   }, [user.id])
 
@@ -154,14 +162,14 @@ export const Home: React.FC<homeProps> = ({ onLogout, user, handleUserUpdate }) 
     return (
       <div className='h-dvh w-screen bg-[#2a2b2f]'>
         <SideNav onLogout={handleLogin} />
-        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={user} projects={staticProjects} handleCreateProject={handleCreateProject} handleUpdateProject={handleUpdateProject} handleDeleteProject={handleDeleteProject} handleUserUpdate={handleUserUpdate} />} />
+        <Route path='/user' component={(propiedades) => <UserPage {...propiedades} user={user} staticUsers={staticUsers} projects={staticProjects} handleCreateProject={handleCreateProject} handleUpdateProject={handleUpdateProject} handleDeleteProject={handleDeleteProject} handleUserUpdate={handleUserUpdate} />} />
         <Route
           path='/' component={(propiedades) => <>
             {(!isLoading)
               ? <div>
                 <SecondarySideNav handlerIsShown={handleShowSecondaryNav} isShown={showSidenav} data={staticProjects} handlerSelectedProject={handleSelectedProject} selectedProject={selectedProject} />
                 <section className={'pt-[1.5rem] px-8 flex h-dvh flex-col' + (showSidenav ? ' lg:ml-[23rem] ml-20 ' : ' lg:ml-20 ml-0')}>
-                  <Content {...propiedades} user={user} projects={projects} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} handleUpdateTask={handleUpdateTask} handleCreateProject={handleCreateProject} handleDeleteProject={handleDeleteProject} />
+                  <Content {...propiedades} user={user} staticUsers={staticUsers} projects={projects} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} handleUpdateTask={handleUpdateTask} handleCreateProject={handleCreateProject} handleDeleteProject={handleDeleteProject} />
                 </section>
               </div>
               : <div className='flex h-dvh w-full px-8 items-center justify-center'>

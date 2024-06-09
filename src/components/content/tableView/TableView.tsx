@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/@/components/ui/table'
 import { ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { tableColumn } from './TableColumns'
 import * as types from '@/common/types'
@@ -9,12 +9,13 @@ import { Input } from '@/@/components/ui/input'
 interface DataTableProps {
   data: types.Task[]
   userId: number
+  staticUsers: types.User[]
   handleUpdateTask: (task: types.Task, id: number) => void
   handleDeleteTask: (taskId: number) => void
   handleCreateTask: (userId: number, task: types.Task) => void
 }
 
-export const TableView: React.FC<DataTableProps> = ({ data, userId, handleUpdateTask, handleDeleteTask, handleCreateTask }) => {
+export const TableView: React.FC<DataTableProps> = ({ data, userId, staticUsers, handleUpdateTask, handleDeleteTask, handleCreateTask }) => {
   const columns = tableColumn({ handleUpdateTask, handleDeleteTask })
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -27,6 +28,7 @@ export const TableView: React.FC<DataTableProps> = ({ data, userId, handleUpdate
     users: [],
     columnId: 1,
     projectId: null,
+    staticUsers,
     onDeleteTask: handleDeleteTask,
     onUpdateTask: handleUpdateTask
   }

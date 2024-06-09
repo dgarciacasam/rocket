@@ -10,14 +10,15 @@ import {
 
 import { AnimatedTooltip } from './AvatarGroup'
 import { convertProfilePic } from '@/common/utils'
+import { ModifyUserModal } from './content/ModifyUsersModal'
 const DEBOUNCE_TIME = 500
 
-export const Task: React.FC<types.Task> = ({ id, title, description, finishDate, onDeleteTask, onUpdateTask, users, columnId, projectId }) => {
+export const Task: React.FC<types.Task> = ({ id, title, staticUsers, description, finishDate, onDeleteTask, onUpdateTask, users, columnId, projectId }) => {
   const [Title, setTitle] = useState(title)
   const [Description, setDescription] = useState(description)
   const [FinishDate, setFinishDate] = useState(finishDate)
   const [data, setData] = useState<types.AnimatedTooltipData[]>([])
-
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
   const dias = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom']
   const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
@@ -25,22 +26,27 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
   const debouncedDescription = useDebounce(Description, DEBOUNCE_TIME)
   const debouncedFinishDate = useDebounce(FinishDate, DEBOUNCE_TIME)
 
+  const newTask: types.Task = {
+    id,
+    title: debouncedTitle !== '' ? debouncedTitle : title,
+    description: debouncedDescription !== '' ? debouncedDescription : description,
+    finishDate: debouncedFinishDate !== undefined ? debouncedFinishDate : finishDate,
+    columnId,
+    projectId,
+    staticUsers,
+    onDeleteTask,
+    onUpdateTask,
+    users
+  }
+
   const handleDelete = (id: number): void => {
     onDeleteTask(id)
   }
 
   useEffect(() => {
-    const newTask: types.Task = {
-      id,
-      title: debouncedTitle !== '' ? debouncedTitle : title,
-      description: debouncedDescription !== '' ? debouncedDescription : description,
-      finishDate: debouncedFinishDate !== undefined ? debouncedFinishDate : finishDate,
-      columnId,
-      projectId,
-      onDeleteTask,
-      onUpdateTask,
-      users
-    }
+    newTask.title = debouncedTitle !== '' ? debouncedTitle : title
+    newTask.description = debouncedDescription !== '' ? debouncedDescription : description
+    newTask.finishDate = debouncedFinishDate !== undefined ? debouncedFinishDate : finishDate
 
     // Llama a la función de actualización cuando cualquiera de las propiedades cambie
     if (
@@ -61,6 +67,10 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
     }))
     setData(dataAvatar)
   }, [users])
+
+  const updateUsers = (setOpen: boolean): void => {
+    setModalOpen(setOpen)
+  }
 
   return (
     <div className='bg-[#292b31] p-4 mb-3 rounded-xl mx-2' id={id.toString()}>
@@ -143,8 +153,10 @@ export const Task: React.FC<types.Task> = ({ id, title, description, finishDate,
             </PopoverContent>
           </Popover>
         </div>
-        <AnimatedTooltip items={data} />
-
+        <div className='cursor-pointer inline-flex' onClick={() => updateUsers(true)}>
+          <AnimatedTooltip items={data} />
+        </div>
+        <ModifyUserModal isOpen={modalOpen} taskInfo={newTask} updateTask={onUpdateTask} staticUsers={staticUsers} setIsOpen={setModalOpen} users={users} />
       </div>
     </div>
   )
