@@ -17,13 +17,15 @@ export interface Props {
 }
 
 export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDeleteTask, handleCreateTask, handleUpdateTask, handleCreateProject, handleDeleteProject }) => {
-  const [imageUrl, setImageUrl] = useState('')
+  const [imageUrl, setImageUrl] = useState('/user.jpg')
   const [view, setView] = useState(sessionStorage.getItem('view') ?? 'board')
   const projectName = projects[0]?.name ?? ''
 
   useEffect(() => {
     if (user != null) {
-      setImageUrl(convertProfilePic(user.profilePic))
+      if (user.profilePic !== null && user.profilePic !== '') {
+        setImageUrl(convertProfilePic(user.profilePic))
+      }
     }
   }, [user.id])
 
