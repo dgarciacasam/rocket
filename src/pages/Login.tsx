@@ -58,9 +58,9 @@ export const Login = (props: loginProps): any => {
         )
         : isRegistering
           ? (
-            <div className='flex flex-col bg-[#111215] rounded-xl w-96 p-8'>
-              <h1 className='text-2xl font-semibold mb-4'>Register</h1>
-              <span className='mb-1'>EMAIL:</span>
+            <div className='flex flex-col bg-[#111215] rounded-xl w-[400px] p-8'>
+              <h1 className='text-2xl font-semibold mb-4'>Registrar</h1>
+              <span className='mb-1'>EMAIL</span>
               <input
                 className='mb-4 text-black rounded-l p-1'
                 type='text'
@@ -70,17 +70,17 @@ export const Login = (props: loginProps): any => {
                 onChange={(ev) => setEmail(ev.target.value)}
               />
 
-              <span className='mb-1'>USERNAME:</span>
+              <span className='mb-1'>NOMBRE DE USUARIO</span>
 
               <input
                 className='mb-4 text-black rounded-l p-1'
                 type='text'
                 name='username'
-                placeholder='Username'
+                placeholder='Nombre de usuario'
                 value={username}
                 onChange={(ev) => setUsername(ev.target.value)}
               />
-              <span className='mb-1'>PASSWORD:</span>
+              <span className='mb-1'>CONTRASEÑA</span>
               <input
                 className='mb-4 text-black rounded-l p-1'
                 type='password'
@@ -88,7 +88,7 @@ export const Login = (props: loginProps): any => {
                 onKeyDown={function (event: KeyboardEvent) {
                   if (event.key === 'Enter') handleRegister()
                 }}
-                placeholder='Password'
+                placeholder='Contraseña'
                 value={password}
                 onChange={(ev) => setPassword(ev.target.value)}
               />
@@ -97,34 +97,34 @@ export const Login = (props: loginProps): any => {
                 className='flex align-center border-white bg-black rounded-full mb-2 button'
                 onClick={handleRegister}
               >
-                Register
+                Registrar
               </button>
               <p className='flex align-center mb-4'>
-                Ya tienes una cuenta?
+                ¿Ya tienes una cuenta?
                 <a
                   className='ml-2 underline cursor-pointer '
                   onClick={handleLoginMode}
                 >
                   {' '}
-                  Login Here
+                  Inicia sesión aquí
                 </a>
               </p>
             </div>
           )
           : (
-            <div className='flex flex-col bg-[#111215] rounded-xl w-96 p-8'>
-              <h1 className='text-2xl font-semibold mb-4'>Login</h1>
-              <span className='mb-1'>USERNAME:</span>
+            <div className='flex flex-col bg-[#111215] rounded-xl w-[400px] p-8'>
+              <h1 className='text-2xl font-semibold mb-4'>Iniciar sesión</h1>
+              <span className='mb-1'>NOMBRE DE USUARIO</span>
 
               <input
                 className='mb-4 text-black rounded-l p-1'
                 type='text'
                 name='username'
-                placeholder='Username'
+                placeholder='Nombre de usuario'
                 value={username}
                 onChange={(ev) => setUsername(ev.target.value)}
               />
-              <span className='mb-1'>PASSWORD:</span>
+              <span className='mb-1'>CONTRASEÑA</span>
               <input
                 className='mb-4 text-black rounded-l p-1'
                 type='password'
@@ -132,7 +132,7 @@ export const Login = (props: loginProps): any => {
                 onKeyDown={function (event: KeyboardEvent) {
                   if (event.key === 'Enter') handleLogin()
                 }}
-                placeholder='Password'
+                placeholder='Contraseña'
                 value={password}
                 onChange={(ev) => setPassword(ev.target.value)}
               />
@@ -141,17 +141,17 @@ export const Login = (props: loginProps): any => {
                 className='flex align-center border-white bg-black rounded-full mb-2 button'
                 onClick={handleLogin}
               >
-                Log in
+                Inicar sesión
               </button>
 
               <p className='flex align-center mb-4'>
-                Don't have an account?
+                ¿Aún no tienes una cuenta?
                 <a
                   className='ml-2 underline cursor-pointer '
                   onClick={handleLoginMode}
                 >
                   {' '}
-                  Register Here
+                  Regístrate aquí
                 </a>
               </p>
             </div>
