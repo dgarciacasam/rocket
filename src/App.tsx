@@ -6,7 +6,6 @@ import { Toaster } from 'sonner'
 import { isAuthenticated, logout } from './common/Services'
 import { BarLoader } from 'react-spinners'
 import useSWR from 'swr'
-import { API_HOST } from './config'
 
 async function getLoginStatus (_key: string): Promise<types.User | null> {
   const loggedUser = await isAuthenticated()
@@ -35,7 +34,8 @@ function App (): JSX.Element {
       .then(async (result) => {
         if (result.ok) {
           await mutate()
-          window.history.replaceState({}, '', API_HOST)
+          location.reload()
+          // window.history.replaceState({}, '', API_HOST)
         }
       })
       .catch((error) => {
