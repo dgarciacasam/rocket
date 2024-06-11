@@ -22,6 +22,7 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
   const projectName = projects[0]?.name ?? ''
 
   useEffect(() => {
+    console.log(projects[0])
     if (user != null) {
       if (user.profilePic !== null && user.profilePic !== '') {
         setImageUrl(convertProfilePic(user.profilePic))
@@ -32,6 +33,12 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
   const putView = (view: string): void => {
     setView(view)
     sessionStorage.setItem('view', view)
+  }
+
+  if (projects.length === 0) {
+    return (
+      <></>
+    )
   }
 
   return (
@@ -142,7 +149,7 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
             <Card
               key={1}
               title='Sin empezar'
-              staticUsers={staticUsers}
+              staticUsers={projects[0].users}
               id={1}
               data={getCard(1, projects)}
               userId={user.id}
@@ -153,7 +160,7 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
             <Card
               key={2}
               title='Pendiente'
-              staticUsers={staticUsers}
+              staticUsers={projects[0].users}
               id={2}
               data={getCard(2, projects)}
               userId={user.id}
@@ -164,7 +171,7 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
             <Card
               key={3}
               title='Finalizado'
-              staticUsers={staticUsers}
+              staticUsers={projects[0].users}
               id={3}
               data={getCard(3, projects)}
               userId={user.id}
