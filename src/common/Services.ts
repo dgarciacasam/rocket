@@ -238,6 +238,7 @@ export const createProject = async (userId: number, project: { name: string, des
     if (!response.ok) {
       throw new Error('Error al crear la tarea')
     }
+    toast.success('Se ha creado el proyecto con éxito')
     return await response.json()
   }).catch((error) => {
     toast.error(error.message)
