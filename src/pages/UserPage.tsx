@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css' // Asegúrate de importar los estilos de ReactCrop
 import { convertProfilePic, getUsersData } from '@/common/utils'
+import { ProjectUsersModal } from '@/components/userPage/ProjectUsersModal'
 
 interface Props {
   user: types.User
@@ -59,12 +60,13 @@ export const UserPage: React.FC<Props> = ({ user, staticUsers, projects, handleC
 
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if ((e.target.files != null) && e.target.files.length > 0) {
-      setCrop(undefined) // Makes crop preview update between images.
+      setCrop(undefined)
       const reader = new FileReader()
       reader.addEventListener('load', () => {
         const result = reader.result as string
         if (result !== null && result !== undefined) {
           setImgSrc(result)
+          console.log(user.profilePic)
         } else {
           setImgSrc('')
         }
@@ -217,10 +219,6 @@ export const UserPage: React.FC<Props> = ({ user, staticUsers, projects, handleC
     if ((image == null) || (previewCanvas == null) || (completedCrop == null)) {
       throw new Error('Crop canvas does not exist')
     }
-
-    // This will size relative to the uploaded image
-    // size. If you want to size according to what they
-    // are looking at on screen, remove scaleX + scaleY
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
 
@@ -243,7 +241,7 @@ export const UserPage: React.FC<Props> = ({ user, staticUsers, projects, handleC
         URL.revokeObjectURL(blobUrlRef.current)
       }
       blobUrlRef.current = URL.createObjectURL(blob)
-      // Set the data URL to the state
+
       setCroppedImg(blobUrlRef.current)
       setModalOpen(false)
 
@@ -444,66 +442,7 @@ export const UserPage: React.FC<Props> = ({ user, staticUsers, projects, handleC
           </section>
         </div>
       </div>
-      {(editingUsers)
-        ? <div className='swal2-container swal2-center swal2-backdrop-show overflow-y-auto '>
-          <div
-            aria-labelledby='swal2-title'
-            aria-describedby='swal2-html-container'
-            className='swal2-popup swal2-modal swal2-show grid bg-[#111215]'
-            tabIndex={-1}
-            role='dialog'
-            aria-live='assertive' aria-modal='true'
-          >
-            <h2 className='swal2-title block text-white' id='swal2-title '>Participantes del proyecto</h2>
-
-            <div className='swal2-html-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
-              {projectUsers.map((user: types.User) => (
-                <article
-                  key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px] cursor-pointer hover:bg-[#ffe3e3]'
-                  onClick={async () => {
-                    if (editingProject != null) {
-                      await updateProjectUsers(false, user, editingProject)
-                    }
-                  }}
-                >
-                  <div className='flex flex-col justify-center items-center'>
-                    <Avatar className='size-12 border-2 border-stone-300 mb-2'>
-                      <AvatarImage src={convertProfilePic(user.profilePic)} />
-                    </Avatar>
-                    <span>{user.name}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            <h2 className='swal2-title block text-white' id='swal2-title '>Todos los usuarios</h2>
-            <div className='swal2-html-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
-              {filteredUsers.map((user: types.User) => (
-                <article
-                  key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px] cursor-pointer hover:bg-[#dcebfc]'
-                  onClick={async () => {
-                    if (editingProject != null) {
-                      await updateProjectUsers(true, user, editingProject)
-                    }
-                  }}
-                >
-                  <div className='flex flex-col justify-center items-center'>
-                    <Avatar className='size-12 border-2 border-stone-300 mb-2'>
-                      <AvatarImage src={convertProfilePic(user.profilePic)} />
-                    </Avatar>
-                    <span>{user.name}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-            <div className='swal2-actions flex '>
-              <div className='swal2-loader' />
-
-              <button type='button' className='swal2-cancel swal2-styled swal2-default-outline inline-block' onClick={() => { setEditingUsers(false) }}>Guardar cambios</button>
-            </div>
-          </div>
-        </div>
-        : <></>}
+      <ProjectUsersModal filteredUsers={filteredUsers} projectUsers={projectUsers} isModalOpen={editingUsers} setIsModalOpen={setEditingUsers} editingProject={editingProject} />
 
     </section>
   )
