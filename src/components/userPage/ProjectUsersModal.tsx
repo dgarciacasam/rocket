@@ -9,9 +9,10 @@ interface ProjectUsersModalProps {
   isModalOpen: boolean
   setIsModalOpen: (isOpen: boolean) => void
   editingProject: types.Project | undefined
+  updateProjectUsers: (isEditing: boolean, user: types.User, editingProject: types.Project) => void
 }
 
-export const ProjectUsersModal: React.FC<ProjectUsersModalProps> = ({ filteredUsers, projectUsers, isModalOpen, setIsModalOpen, editingProject }) => {
+export const ProjectUsersModal: React.FC<ProjectUsersModalProps> = ({ filteredUsers, projectUsers, isModalOpen, setIsModalOpen, editingProject, updateProjectUsers }) => {
   if (!isModalOpen) {
     return (
       <></>
@@ -34,15 +35,15 @@ export const ProjectUsersModal: React.FC<ProjectUsersModalProps> = ({ filteredUs
           {projectUsers.map((user: types.User) => (
             <article
               key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px] cursor-pointer hover:bg-[#ffe3e3]'
-              onClick={async () => {
+              onClick={() => {
                 if (editingProject != null) {
-                  await updateProjectUsers(false, user, editingProject)
+                  updateProjectUsers(false, user, editingProject)
                 }
               }}
             >
               <div className='flex flex-col justify-center items-center'>
-                <Avatar className='size-12 border-2 border-stone-300 mb-2'>
-                  <AvatarImage src={convertProfilePic(user.profilePic)} />
+                <Avatar className='size-12 border-2 border-stone-300 mb-2 rounded-full'>
+                  <AvatarImage src={convertProfilePic(user.profilePic)} className='rounded-full' />
                 </Avatar>
                 <span>{user.name}</span>
               </div>
@@ -55,15 +56,15 @@ export const ProjectUsersModal: React.FC<ProjectUsersModalProps> = ({ filteredUs
           {filteredUsers.map((user: types.User) => (
             <article
               key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px] cursor-pointer hover:bg-[#dcebfc]'
-              onClick={async () => {
+              onClick={() => {
                 if (editingProject != null) {
-                  await updateProjectUsers(true, user, editingProject)
+                  updateProjectUsers(true, user, editingProject)
                 }
               }}
             >
               <div className='flex flex-col justify-center items-center'>
-                <Avatar className='size-12 border-2 border-stone-300 mb-2'>
-                  <AvatarImage src={convertProfilePic(user.profilePic)} />
+                <Avatar className='size-12 border-2 border-stone-300 mb-2 rounded-full'>
+                  <AvatarImage src={convertProfilePic(user.profilePic)} className='rounded-full' />
                 </Avatar>
                 <span>{user.name}</span>
               </div>
