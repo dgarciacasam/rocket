@@ -168,12 +168,18 @@ export const Home: React.FC<homeProps> = ({ onLogout, user, handleUserUpdate }) 
             {(!isLoading)
               ? <div>
                 <SecondarySideNav handlerIsShown={handleShowSecondaryNav} isShown={showSidenav} data={staticProjects} handlerSelectedProject={handleSelectedProject} selectedProject={selectedProject} />
-                <section className={'pt-[1.5rem] px-8 flex h-dvh flex-col' + (showSidenav ? ' lg:ml-[23rem] ml-20 ' : ' lg:ml-20 ml-0')}>
+                <section className={'pt-[1.5rem] px-6 lg:px-8 flex h-dvh flex-col' + (showSidenav ? ' lg:ml-[23rem]  ' : ' lg:ml-20 ml-0')}>
                   <Content {...propiedades} user={user} staticUsers={staticUsers} projects={projects} handleDeleteTask={handleDeleteTask} handleCreateTask={handleCreateTask} handleUpdateTask={handleUpdateTask} handleCreateProject={handleCreateProject} handleDeleteProject={handleDeleteProject} />
                 </section>
               </div>
-              : <div className='flex h-dvh w-full px-8 items-center justify-center'>
-                <BarLoader color='#ffffff' width='400px' height='8px' />
+              : <div className='w-full h-screen flex items-center justify-center bg-[#111215]'>
+                <div className='lg:hidden'>
+                  <BarLoader color='#ffffff' width='200px' height='8px' />
+                </div>
+
+                <div className='hidden md:block'>
+                  <BarLoader color='#ffffff' width='600px' height='8px' />
+                </div>
               </div>}
 
           </>}

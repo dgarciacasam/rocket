@@ -183,15 +183,15 @@ export const UserPage: React.FC<Props> = ({ user, staticUsers, projects, handleC
   }
 
   return (
-    <section className={'pt-[1.5rem] px-56  flex h-screen flex-col' + ('lg:ml-[20rem] ml-20')}>
-      <div className='flex w-full'>
-        <div className='flex flex-col content-center w-80 p-4'>
+    <section className='pt-[1.5rem] pb-[3rem] lg:px-4 xl:px-10 flex justify-center lg:justify-start lg:h-screen lg:flex-col lg:ml-[5rem] '>
+      <div className='flex flex-col lg:flex-row lg:items-start justify-center items-center lg:w-full'>
+        <div className='flex flex-col content-center lg:w-[30%] p-4'>
           <div className='flex flex-col items-center justify-center cursor-pointer mb-2' onClick={triggerFileInput}>
             <div className='flex flex-col group relative'>
               <Avatar className='size-72 border-2 border-stone-300'>
                 <AvatarImage src={(croppedImg != null) ? croppedImg : convertProfilePic(user.profilePic)} />
               </Avatar>
-              <span className='absolute bottom-0 text-center bg-[#111215] w-[50%] rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-0.5 mt-1 justify-self-center self-center'>Modificar avatar</span>
+              <span className='absolute bottom-0 text-center bg-[#111215] lg:w-[50%] rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-0.5 mt-1 justify-self-center self-center'>Modificar avatar</span>
             </div>
             <input type='file' id='inputFile' style={{ display: 'none' }} onChange={onSelectFile} />
           </div>
@@ -207,10 +207,11 @@ export const UserPage: React.FC<Props> = ({ user, staticUsers, projects, handleC
                 <button className='py-2 px-4 rounded bg-white text-black hover:rounded hover:bg-[#111215] hover:text-white' onClick={() => { setIsEditing(!isEditing) }}>Cancelar</button>
               </div>
             </div>
-            : <><h1 className='text-2xl '>{user.name}</h1>
-              <h1>{user.email}</h1>
+            : <div>
+              <h1 className='text-2xl '>{user.name}</h1>
+              <h2>{user.email}</h2>
               <button className='bg-[#1F2022] rounded mt-2 p-2 hover:rounded hover:bg-[#111215]' onClick={() => { setIsEditing(!isEditing) }}>Editar perfil</button>
-            </>}
+            </div>}
         </div>
         <div className='flex flex-col  w-full p-4'>
           <section className='h-full flex flex-col '>
@@ -235,7 +236,7 @@ export const UserPage: React.FC<Props> = ({ user, staticUsers, projects, handleC
                 Añadir proyecto
               </button>
             </div>
-            <section className='grid grid-cols-2 gap-2'>
+            <section className='grid md:grid-cols-2 gap-2'>
               {
                 filteredProjects.map((project: types.Project) => (
                   <article className='border border-white rounded w-6/12 p-2 w-full' key={project.id}>

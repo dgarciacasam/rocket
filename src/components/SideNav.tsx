@@ -8,8 +8,8 @@ export const SideNav: React.FC<SideNavProps> = ({ onLogout }) => {
   const route = window.location.pathname
 
   return (
-    <nav className='flex flex-col bg-[#111215] w-20 h-screen fixed items-center '>
-      <div className='mt-[1.5em] mb-2 '>
+    <nav className='flex w-screen lg:flex-col bg-[#111215] lg:w-20 lg:h-screen fixed bottom-0 lg:items-center z-50'>
+      <div className='lg:mt-[1.5em] lg:mb-2 '>
         <svg
           className='icon icon-tabler icon-tabler-rocket'
           width='56'
@@ -27,8 +27,8 @@ export const SideNav: React.FC<SideNavProps> = ({ onLogout }) => {
           <path d='M15 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0' />
         </svg>
       </div>
-      <div className='flex flex-col h-full justify-between mb-8'>
-        <div>
+      <div className='flex w-full pl-4 lg:pl-0 lg:flex-col lg:h-full justify-between items-center lg:mb-8'>
+        <div className='flex lg:flex-col'>
           <SideNavButton href='/'>
             <svg
               className='icon icon-tabler icon-tabler-home'
@@ -67,7 +67,7 @@ export const SideNav: React.FC<SideNavProps> = ({ onLogout }) => {
         </div>
         <button
           onClick={onLogout}
-          className='mt-[1.5rem]
+          className='lg:mt-[1.5rem]
       w-12 h-12 flex justify-center items-center
       rounded-full hover:bg-[rgba(255,255,255,0.1)] cursor-pointer pr-2'
         >

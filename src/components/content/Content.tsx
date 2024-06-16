@@ -44,11 +44,11 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
   return (
     <div className='bg-[#2a2b2f]'>
       <TopContent username={user.name} imageUrl={imageUrl} />
-      <section className=' flex flex-col pt-4'>
-        <section className='flex justify-between border-b-2 border-solid border-[rgba(255,255,255,0.1)] mb-6'>
-          <div className='flex flex-grow basis-0'>
+      <section className=' flex flex-col pt-4 pb-20 md:pb-0'>
+        <section className='flex flex-col lg:flex-row justify-between border-b-2 border-solid border-[rgba(255,255,255,0.1)] mb-6'>
+          <div className='hidden lg:flex flex-grow basis-0 '>
             <button
-              className={`button hover:rounded ${(view === 'board') ? styles.active : 'flex items-center'}`}
+              className={`button hover:rounded  ${(view === 'board') ? styles.active : 'flex items-center'}`}
               onClick={() => { putView('board') }}
             >
               <svg
@@ -70,7 +70,7 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
               Vista tarjetas
             </button>
 
-            <button className={`button ml-1 hover:rounded ${(view === 'table') ? styles.active : 'flex items-center ml-1 '}`} onClick={() => { putView('table') }}>
+            <button className={`button ml-1  hover:rounded ${(view === 'table') ? styles.active : 'flex items-center ml-1 '}`} onClick={() => { putView('table') }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 className='icon icon-tabler icon-tabler-brand-trello mr-1'
@@ -91,13 +91,13 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
               Vista de tabla
             </button>
           </div>
-          <div>
+          <div className='flex items-center pb-1'>
             <p className='text-2xl'>{projectName}</p>
           </div>
 
-          <div className='flex flex-grow basis-0 justify-end'>
+          <div className='flex lg:flex-grow lg:basis-0 lg:justify-end mt-2 lg:mt-0'>
 
-            <button className='flex items-center button hover:rounded' onClick={handleCreateProject}>
+            <button className='flex items-center button hover:rounded text-sm lg:text-base' onClick={handleCreateProject}>
               <svg
                 width='20'
                 height='20'
@@ -119,7 +119,7 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
             </button>
             {(projects[0]?.id === 0)
               ? <></>
-              : <button className='flex items-center button hover:rounded' onClick={() => handleDeleteProject(projects[0].id)}>
+              : <button className='flex items-center button hover:rounded text-sm lg:text-base' onClick={() => handleDeleteProject(projects[0].id)}>
                 <svg
                   width='20'
                   height='20'
@@ -145,7 +145,7 @@ export const Content: React.FC<Props> = ({ user, staticUsers, projects, handleDe
         </section>
 
         {(view === 'board')
-          ? <section className='grid md:grid-cols-3 gap-8 grid-cols-2 h-fit'>
+          ? <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4  h-fit'>
             <Card
               key={1}
               title='Sin empezar'

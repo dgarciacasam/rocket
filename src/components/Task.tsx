@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import * as types from '../common/types'
 import { useDebounce } from '@uidotdev/usehooks'
 import { Calendar } from '@/@/components/ui/calendar'
@@ -72,6 +72,24 @@ export const Task: React.FC<types.Task> = ({ id, title, staticUsers, description
     setModalOpen(setOpen)
   }
 
+  const handleChangeColumn = (e: ChangeEvent<HTMLSelectElement>, task: types.Task): void => {
+    task.columnId = +e.target.value
+    onUpdateTask(task, task.id)
+  }
+
+  const currentStatus = columnId
+
+  let bgColor = 'bg-red-50'
+  let textColor = 'text-red-700'
+  if (currentStatus === 2) {
+    bgColor = 'bg-yellow-50'
+    textColor = 'text-yellow-600'
+  }
+  if (currentStatus === 3) {
+    bgColor = 'bg-emerald-50'
+    textColor = 'text-green-800'
+  }
+
   return (
     <div className='bg-[#292b31] p-4 mb-3 rounded-xl mx-2' id={id.toString()}>
       <div>
@@ -115,11 +133,22 @@ export const Task: React.FC<types.Task> = ({ id, title, staticUsers, description
         />
 
       </div>
-      <div className='flex pt-4'>
-        <div className='mt-2 w-[60%]'>
+      <div className='flex flex-col pt-4'>
+        <div className='flex mb-2'>
+          <select
+            value={currentStatus}
+            className={`${bgColor} ${textColor} rounded-full px-2 py-1 font-bold text-center`}
+            onChange={(e) => handleChangeColumn(e, newTask)}
+          >
+            <option value='1'>Sin empezar</option>
+            <option value='2'>Pendiente</option>
+            <option value='3'>Finalizado</option>
+          </select>
+        </div>
+        <div className='mt-2 lg:w-[80%] mb-2'>
           <Popover>
             <PopoverTrigger asChild>
-              <button className='font-bold text-[rgba(255,255,255,0.7)] bg-[rgba(54,55,60,255)] rounded-full py-2 px-4 text-[14px] flex hover:text-white'>
+              <button className='font-bold text-[rgba(255,255,255,0.7)] bg-[rgba(54,55,60,255)] rounded-full py-2 px-4 text-[14px] flex items-center hover:text-white'>
                 <svg
                   width='20'
                   height='20'

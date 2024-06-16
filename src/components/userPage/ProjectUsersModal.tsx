@@ -31,7 +31,7 @@ export const ProjectUsersModal: React.FC<ProjectUsersModalProps> = ({ filteredUs
       >
         <h2 className='swal2-title block text-white' id='swal2-title '>Participantes del proyecto</h2>
 
-        <div className='swal2-html-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
+        <div className='swal2-html-container grid grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
           {projectUsers.map((user: types.User) => (
             <article
               key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px] cursor-pointer hover:bg-[#ffe3e3]'
@@ -52,7 +52,7 @@ export const ProjectUsersModal: React.FC<ProjectUsersModalProps> = ({ filteredUs
         </div>
 
         <h2 className='swal2-title block text-white' id='swal2-title '>Todos los usuarios</h2>
-        <div className='swal2-html-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
+        <div className='swal2-html-container grid grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100px*4+16px*3)]' style={{ paddingInline: '0.5rem' }}>
           {filteredUsers.map((user: types.User) => (
             <article
               key={user.id} className='flex flex-col justify-between items-center border border-white rounded pt-1 h-[100px] cursor-pointer hover:bg-[#dcebfc]'

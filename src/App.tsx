@@ -49,8 +49,14 @@ function App (): JSX.Element {
 
   if (isLoading) {
     return (
-      <div className='w-full h-screen flex items-center justify-center'>
-        <BarLoader color='#ffffff' width='400px' height='8px' />
+      <div className='w-full h-screen flex items-center justify-center bg-[#111215]'>
+        <div className='lg:hidden'>
+          <BarLoader color='#ffffff' width='200px' height='8px' />
+        </div>
+
+        <div className='hidden md:block'>
+          <BarLoader color='#ffffff' width='600px' height='8px' />
+        </div>
       </div>
     )
   }

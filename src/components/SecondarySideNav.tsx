@@ -15,7 +15,7 @@ export const SecondarySideNav = (props: Props) => {
   }
 
   return (
-    <div className={'fixed flex items-center justify-center h-screen  ' + (!props.isShown ? ' w-0 ml-0' : ' ml-20 w-72 ')}>
+    <div className={'fixed flex items-center justify-center h-screen z-40' + (!props.isShown ? ' w-0 ml-0' : ' lg:ml-20 w-72 ')}>
       <nav className={'bg-[#222327] w-72 px-6 h-screen justify-between py-[1.5rem] fixed lg:flex lg:flex-col' + (!props.isShown ? ' invisible' : ' ')}>
         <div className='flex flex-col'>
 
@@ -29,7 +29,7 @@ export const SecondarySideNav = (props: Props) => {
                         <li key={project.id} className={`${styles.SecondarySideNavList} ${styles.treeChildren}`}>
                           <button
                             className={`text-left py-1 px-2 rounded mb-2 border border-white hover:bg-[#111215] font-semibold ${(project.id === props.selectedProject) ? 'bg-[#111215]' : ''}`}
-                            key={project.id} onClick={() => { props.handlerSelectedProject(project.id) }}
+                            key={project.id} onClick={() => { props.handlerSelectedProject(project.id); props.handlerIsShown() }}
                           >
                             {project.name}
                           </button>
@@ -45,7 +45,7 @@ export const SecondarySideNav = (props: Props) => {
           </div>
         </div>
       </nav>
-      <button onClick={isNavOpen} className={'button flex items-center justify-center w-auto min-w-12 h-12 px-2 hover:rounded-none hover:bg-transparent ' + (!props.isShown ? ' ml-48' : ' ml-80 ')}>
+      <button onClick={isNavOpen} className={'button flex items-center justify-center w-auto min-w-12 h-12 px-2 hover:rounded-none hover:bg-transparent ' + (!props.isShown ? 'ml-6 lg:ml-48' : ' ml-80 ')}>
         <svg
           className='icon icon-tabler icon-tabler-chevron-compact-left'
           width='32'
