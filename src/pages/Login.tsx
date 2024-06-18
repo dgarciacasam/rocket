@@ -229,7 +229,7 @@ export const Login = (props: loginProps): any => {
                     className='bg-white text-black font-semibold py-2 rounded mb-2 hover:text-white hover:bg-[#111215] hover:outline hover:outline-1 hover:border-white'
                     onClick={handleLogin}
                   >
-                    Inicar sesión
+                    Iniciar sesión
                   </button>
 
                   <p className='flex align-center mb-4'>
