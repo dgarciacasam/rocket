@@ -71,13 +71,13 @@ export const UserPage: React.FC<Props> = ({ user, staticUsers, projects, handleC
 
     if (save !== null) {
       Swal.fire({
-        title: 'Modificar proyecto',
+        title: 'Modificar usuario',
         html: `<input type="password" id="confirmPassword" class="swal2-input" placeholder="Introduce la contraseña">
           `,
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Modificar proyecto',
+        confirmButtonText: 'Modificar usuario',
         cancelButtonText: 'Cancelar',
         background: '#111215',
         color: '#ffffff'

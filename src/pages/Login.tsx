@@ -101,10 +101,10 @@ export const Login = (props: loginProps): any => {
               </div>
               <div className='flex h-full w-full align-center justify-center mb-12'>
                 <div className='flex flex-col bg-[#111215] w-full rounded-xl lg:border lg:border-white p-10 sm:w-[400px] self-center'>
-                  <h1 className='text-2xl font-semibold mb-4'>REGISTRAR</h1>
+                  <h1 className='text-2xl font-semibold mb-4 text-center'>REGISTRAR</h1>
                   <span className='mb-1'>Email</span>
                   <input
-                    className='mb-4 text-black rounded p-1'
+                    className='mb-4 text-black text-sm p-2 rounded p-1'
                     type='text'
                     name='email'
                     placeholder='Email'
@@ -115,7 +115,7 @@ export const Login = (props: loginProps): any => {
                   <span className='mb-1'>Nombre</span>
 
                   <input
-                    className='mb-4 text-black rounded p-1'
+                    className='mb-4 text-black rounded p-2 text-sm'
                     type='text'
                     name='username'
                     placeholder='Nombre de usuario'
@@ -124,7 +124,7 @@ export const Login = (props: loginProps): any => {
                   />
                   <span className='mb-1'>Contraseña</span>
                   <input
-                    className='mb-4 text-black rounded p-1'
+                    className='mb-4 text-black rounded p-2 text-sm'
                     type='password'
                     name='password'
                     onKeyDown={function (event: KeyboardEvent) {
@@ -136,7 +136,7 @@ export const Login = (props: loginProps): any => {
                   />
 
                   <button
-                    className=' border-white bg-black rounded-full mb-2 button'
+                    className=' bg-white text-black font-semibold py-2 rounded mb-2 hover:text-white hover:bg-[#111215] hover:outline hover:outline-1 hover:border-white'
                     onClick={handleRegister}
                   >
                     Registrar
@@ -144,7 +144,7 @@ export const Login = (props: loginProps): any => {
                   <p className='flex align-center mb-4'>
                     ¿Ya tienes una cuenta?
                     <a
-                      className='ml-2 underline cursor-pointer '
+                      className='ml-2 underline cursor-pointer font-semibold'
                       onClick={handleLoginMode}
                     >
                       {' '}
@@ -201,11 +201,11 @@ export const Login = (props: loginProps): any => {
               </div>
               <div className='flex h-full w-full align-center justify-center mb-12'>
                 <div className='flex flex-col bg-[#111215] lg:border lg:border-white w-full rounded-xl p-10 sm:w-[400px] self-center'>
-                  <h1 className='text-2xl font-semibold mb-4'>INICIAR SESIÓN </h1>
+                  <h1 className='text-2xl font-semibold mb-4 text-center'>INICIAR SESIÓN </h1>
                   <span className='mb-1'>Usuario</span>
 
                   <input
-                    className='mb-4 text-black rounded p-1'
+                    className='mb-4 text-black rounded p-2 text-sm'
                     type='text'
                     name='username'
                     placeholder='Nombre de usuario'
@@ -214,7 +214,7 @@ export const Login = (props: loginProps): any => {
                   />
                   <span className='mb-1'>Contraseña</span>
                   <input
-                    className='mb-4 text-black rounded p-1'
+                    className='mb-4 text-black rounded p-2 text-sm'
                     type='password'
                     name='password'
                     onKeyDown={function (event: KeyboardEvent) {
@@ -226,7 +226,7 @@ export const Login = (props: loginProps): any => {
                   />
 
                   <button
-                    className=' border-white bg-black rounded-full mb-2 button'
+                    className='bg-white text-black font-semibold py-2 rounded mb-2 hover:text-white hover:bg-[#111215] hover:outline hover:outline-1 hover:border-white'
                     onClick={handleLogin}
                   >
                     Inicar sesión
@@ -235,7 +235,7 @@ export const Login = (props: loginProps): any => {
                   <p className='flex align-center mb-4'>
                     ¿Aún no tienes una cuenta?
                     <a
-                      className='ml-2 underline cursor-pointer '
+                      className='ml-2 underline cursor-pointer font-semibold '
                       onClick={handleLoginMode}
                     >
                       {' '}

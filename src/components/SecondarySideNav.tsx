@@ -29,7 +29,7 @@ export const SecondarySideNav = (props: Props) => {
                         <li key={project.id} className={`${styles.SecondarySideNavList} ${styles.treeChildren}`}>
                           <button
                             className={`text-left py-1 px-2 rounded mb-2 border border-white hover:bg-[#111215] font-semibold ${(project.id === props.selectedProject) ? 'bg-[#111215]' : ''}`}
-                            key={project.id} onClick={() => { props.handlerSelectedProject(project.id); props.handlerIsShown() }}
+                            key={project.id} onClick={() => { props.handlerSelectedProject(project.id) }}
                           >
                             {project.name}
                           </button>
